@@ -58,6 +58,16 @@ npm run dev -- --host --port 5173
 2. Start the frontend (port 5173) and ensure it can reach the backend URL. Set `VITE_API_BASE` if the backend is forwarded under a different host/port.
 3. Visit the frontend, click **CHICKEN**, and enjoy the poultry Niagara Falls.
 
+### Docker Compose (backend + frontend)
+
+If you prefer containers, build and run both services together:
+
+```bash
+docker compose up --build
+```
+
+The backend is served on `http://localhost:8000` and the frontend on `http://localhost:5173`, with `VITE_API_BASE` wired to the backend service inside the compose network.
+
 ## Next steps
 - Add persistence for the leaderboard if chickens must survive restarts.
 - Consider WebSocket/SSE streaming for `/ascii/rave` to push frames live.
