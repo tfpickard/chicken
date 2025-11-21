@@ -1,11 +1,11 @@
-<script lang="ts">
+<script>
 	import { onMount, onDestroy } from 'svelte';
 	import { CHICKEN_FRAMES, SCREAMING_CHICKEN } from '$lib/chickens';
 
 	let currentFrame = 0;
 	let chickenOutput = '';
 	let isLoading = false;
-	let animationInterval: ReturnType<typeof setInterval>;
+	let animationInterval;
 	let konamiActivated = false;
 
 	// Konami code sequence
@@ -31,7 +31,7 @@
 		}
 	});
 
-	function handleKonami(e: KeyboardEvent) {
+	function handleKonami(e) {
 		if (e.code === konamiCode[konamiIndex]) {
 			konamiIndex++;
 			if (konamiIndex === konamiCode.length) {
