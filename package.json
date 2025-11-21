@@ -1,0 +1,17 @@
+{
+  "name": "chicken-caas",
+  "version": "1.0.0",
+  "description": "Chicken as a Service: serious enterprise poultry API",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "lint": "echo 'cluck gently'"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
