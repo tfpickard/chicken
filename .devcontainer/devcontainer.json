@@ -1,15 +1,22 @@
 {
 	"name": "Chicken-as-a-Service",
 	"image": "mcr.microsoft.com/devcontainers/javascript-node:20",
-	"features": {},
+	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
+		"ghcr.io/devcontainers/features/python:1": {
+			"version": "3.12"
+		}
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"svelte.svelte-vscode"
+				"svelte.svelte-vscode",
+				"ms-python.python",
+				"ms-azuretools.vscode-docker"
 			]
 		}
 	},
-	"forwardPorts": [5173],
-	"postCreateCommand": "npm install",
+	"forwardPorts": [5173, 8000, 3000],
+	"postCreateCommand": "npm install && pip install -r backend/requirements.txt",
 	"postStartCommand": "npm run dev -- --host"
 }
