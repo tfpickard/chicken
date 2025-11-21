@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chicken</title>
+  <style>
+    :root {
+      --yellow: #ffff00;
+      --ink: #111;
+      --accent: #ff6f00;
+      --mono: 'Fira Code', 'Roboto Mono', monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--yellow);
+      color: var(--ink);
+      display: flex;
+      min-height: 100vh;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .shell {
+      background: rgba(255,255,255,0.8);
+      border: 4px solid var(--ink);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 960px;
+      width: 100%;
+      box-shadow: 8px 8px 0 var(--ink);
+    }
+    h1 { margin: 0; font-size: 48px; text-transform: lowercase; }
+    h2 { margin: 4px 0 16px; font-weight: 500; color: var(--accent); }
+    .stage {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .ascii {
+      flex: 1 1 320px;
+      background: #fff8c4;
+      border: 2px dashed var(--ink);
+      border-radius: 12px;
+      padding: 16px;
+      font-family: var(--mono);
+      font-size: 20px;
+      min-height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: pre;
+    }
+    button {
+      background: var(--ink);
+      color: var(--yellow);
+      border: none;
+      padding: 16px 24px;
+      font-size: 20px;
+      font-weight: 800;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 var(--accent);
+      transition: transform 120ms ease, box-shadow 120ms ease;
+    }
+    button:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--accent);
+    }
+    .waterfall {
+      flex: 1 1 320px;
+      background: #fffdf0;
+      border: 2px solid var(--ink);
+      border-radius: 12px;
+      padding: 12px;
+      max-height: 260px;
+      overflow-y: auto;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 0, 0.9);
+      z-index: 20;
+      font-family: var(--mono);
+      font-size: 32px;
+      color: var(--ink);
+      text-align: center;
+      padding: 20px;
+    }
+    .overlay.visible { display: flex; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <h1>chicken</h1>
+    <h2>CaaC: Chicken as a CaaC</h2>
+    <div class="stage">
+      <div class="ascii" id="ascii"></div>
+      <div>
+        <button id="chickenButton">CHICKEN</button>
+      </div>
+      <div class="waterfall" id="waterfall"></div>
+    </div>
+  </div>
+  <div class="overlay" id="konamiOverlay"></div>
+  <script>
+    const asciiEl = document.getElementById('ascii');
+    const waterfallEl = document.getElementById('waterfall');
+    const overlayEl = document.getElementById('konamiOverlay');
+    const button = document.getElementById('chickenButton');
+
+    async function loadFrames() {
+      const res = await fetch('/ascii/rave');
+      const data = await res.json();
+      return { frames: data.frames || [], fps: data.fps || 4 };
+    }
+
+    function animate(frames, fps) {
+      let i = 0;
+      setInterval(() => {
+        asciiEl.textContent = frames[i % frames.length];
+        i += 1;
+      }, 1000 / fps);
+    }
+
+    async function initAscii() {
+      const { frames, fps } = await loadFrames();
+      if (frames.length === 0) {
+        asciiEl.textContent = 'no chickens, only silence';
+        return;
+      }
+      animate(frames, fps);
+    }
+
+    async function fetchChickens() {
+      const res = await fetch('/chicken');
+      const text = await res.text();
+      waterfallEl.textContent = text;
+      waterfallEl.scrollTop = waterfallEl.scrollHeight;
+    }
+
+    button.addEventListener('click', fetchChickens);
+    initAscii();
+
+    const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+    let buffer = [];
+    const bigChicken = `
+        _   _
+       (q\_/p)
+        /. .\
+       =\_t_/=
+       /   \\
+      ((   ))
+     /""* *""\\
+     \__\_/__/
+    `;
+
+    window.addEventListener('keydown', (e) => {
+      buffer.push(e.key);
+      if (buffer.length > konami.length) buffer.shift();
+      if (konami.every((k, idx) => buffer[idx] === k)) {
+        overlayEl.textContent = bigChicken + '\nTHE GREAT CHICKEN SCREAMS';
+        overlayEl.classList.add('visible');
+        setTimeout(() => overlayEl.classList.remove('visible'), 2500);
+        buffer = [];
+      }
+    });
+  </script>
+</body>
+</html>
