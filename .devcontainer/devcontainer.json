@@ -1,0 +1,15 @@
+{
+	"name": "Chicken-as-a-Service",
+	"image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+	"features": {},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"svelte.svelte-vscode"
+			]
+		}
+	},
+	"forwardPorts": [5173],
+	"postCreateCommand": "npm install",
+	"postStartCommand": "npm run dev -- --host"
+}
