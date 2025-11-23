@@ -212,23 +212,23 @@
 </svelte:head>
 
 <main class="container">
-  <h1>🐔 Chicken Flocking Simulation</h1>
+  <h1>𓅢 𓅱 Flocking Simulation</h1>
 
   <div class="content">
     <div class="canvas-container">
       <canvas bind:this={canvas}></canvas>
       <div class="stats">
         <span>FPS: {fps}</span>
-        <span>Chickens: {particles.length}</span>
+        <span>𓅱𓅱: {particles.length}</span>
         <span>Flockiness: {avgAlignment.toFixed(3)}</span>
       </div>
     </div>
 
     <div class="controls">
-      <h2>Chicken Controls</h2>
+      <h2>𓅢 Controls</h2>
 
       <div class="control-group">
-        <button on:click={reset} class="btn">🔄 Reset Chickens</button>
+        <button on:click={reset} class="btn">🔄 Reset 𓅱𓅱</button>
       </div>
 
       <div class="control-group">
@@ -247,7 +247,7 @@
 
       <div class="control-group">
         <label>
-          <span>Chicken Speed: {speed.toFixed(1)}</span>
+          <span>𓅱 Speed: {speed.toFixed(1)}</span>
           <input
             type="range"
             bind:value={speed}
@@ -260,7 +260,7 @@
 
       <div class="control-group">
         <label>
-          <span>Chicken Chaos: {noiseStrength.toFixed(2)}</span>
+          <span>𓅱 Chaos: {noiseStrength.toFixed(2)}</span>
           <input
             type="range"
             bind:value={noiseStrength}
@@ -273,7 +273,7 @@
 
       <div class="control-group">
         <label>
-          <span>Chicken Vision: {neighborRadius}</span>
+          <span>𓅱 Vision: {neighborRadius}</span>
           <input
             type="range"
             bind:value={neighborRadius}
@@ -287,7 +287,7 @@
       <div class="control-group">
         <label>
           <input type="checkbox" bind:checked={showVectors} />
-          Show <span class="vector-text">chicken</span>
+          Show <span class="vector-text">𓅱</span>
         </label>
       </div>
 
@@ -301,7 +301,7 @@
   </div>
 
   <div class="back-link">
-    <a href="/">← Back to Chickens</a>
+    <a href="/">← Back to 𓅱𓅱</a>
   </div>
 </main>
 

@@ -378,21 +378,21 @@
 	{/if}
 
 	<div class="vicsek-container">
-		<h2 class="vicsek-title">🐔 chicken(t)</h2>
+		<h2 class="vicsek-title">𓅢 chicken(t)</h2>
 		<div class="vicsek-content">
 			<div class="vicsek-canvas-container">
 				<canvas bind:this={vicsekCanvas} class="vicsek-canvas"></canvas>
 				<div class="vicsek-stats">
-					<span>fps(🐔): {vicsekFps}</span>
-					<span>n(🐔): {particles.length}</span>
-					<span>Φ(chicken): {avgAlignment.toFixed(3)}</span>
+					<span>fps(𓅱): {vicsekFps}</span>
+					<span>n(𓅱𓅱): {particles.length}</span>
+					<span>Φ(𓅢): {avgAlignment.toFixed(3)}</span>
 				</div>
 			</div>
 			<div class="vicsek-controls">
-				<button on:click={resetVicsek} class="vicsek-btn">🔄 chicken.reset()</button>
+				<button on:click={resetVicsek} class="vicsek-btn">🔄 𓅢.reset()</button>
 
 				<label class="vicsek-control">
-					<span>||chickens||: {particleCount}</span>
+					<span>||𓅱𓅱||: {particleCount}</span>
 					<input
 						type="range"
 						bind:value={particleCount}
