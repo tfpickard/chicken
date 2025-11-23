@@ -287,7 +287,7 @@
       <div class="control-group">
         <label>
           <input type="checkbox" bind:checked={showVectors} />
-          Show Chicken Vectors
+          Show <span class="vector-text">chicken</span>
         </label>
       </div>
 
@@ -421,6 +421,22 @@
 
   .btn:active {
     transform: translateY(2px);
+  }
+
+  .vector-text {
+    position: relative;
+    display: inline-block;
+    font-weight: bold;
+  }
+
+  .vector-text::after {
+    content: '→';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%) rotate(0deg);
+    font-size: 1.2em;
+    color: #FF6600;
   }
 
   .back-link {
