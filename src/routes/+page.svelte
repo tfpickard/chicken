@@ -109,8 +109,8 @@
 	{/if}
 
 	<footer>
-		<p>Enterprise Poultry Solutions since 2024</p>
-		<p class="hint">psst... try the konami code</p>
+		<p>Chicen Agents for Enterprise Cickentic Solutions since 1974</p>
+		<p class="hint">cluck... chicken chicken chicken try chicken konami chicken chicken code</p>
 	</footer>
 </main>
 
