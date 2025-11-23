@@ -8,10 +8,24 @@
 	let animationInterval;
 	let konamiActivated = false;
 	let chickenCount = Math.floor(Math.random() * 1000);
+	let matrixMode = false;
+	let canvas;
+	let ctx;
+	let matrixInterval;
 
 	// Konami code sequence
 	const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
 	let konamiIndex = 0;
+
+	// Chicken matrix characters
+	const CHICKEN_CHARS = [
+		'c', 'h', 'i', 'k', 'e', 'n',
+		'🐔', '🐓', '🐤', '🐥', '🐣', '🍗',
+		'鸡', '鷄', '雞', '鶏', '계', '닭',
+		'公鸡', '母鸡', '小鸡', '雏鸡',
+		'蛋', '卵', '🥚',
+		'♈', '⚡', '☄', '✨'
+	];
 
 	onMount(() => {
 		// Start the chicken animation at 4 fps (250ms)
@@ -26,6 +40,9 @@
 	onDestroy(() => {
 		if (animationInterval) {
 			clearInterval(animationInterval);
+		}
+		if (matrixInterval) {
+			clearInterval(matrixInterval);
 		}
 		if (typeof window !== 'undefined') {
 			window.removeEventListener('keydown', handleKonami);
@@ -46,6 +63,66 @@
 		} else {
 			konamiIndex = 0;
 		}
+	}
+
+	function toggleMatrixMode() {
+		matrixMode = !matrixMode;
+
+		if (matrixMode) {
+			// Start matrix animation
+			setTimeout(() => {
+				if (canvas) {
+					initMatrix();
+				}
+			}, 50);
+		} else {
+			// Stop matrix animation
+			if (matrixInterval) {
+				clearInterval(matrixInterval);
+				matrixInterval = null;
+			}
+		}
+	}
+
+	function initMatrix() {
+		ctx = canvas.getContext('2d');
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+
+		const fontSize = 16;
+		const columns = Math.floor(canvas.width / fontSize);
+		const drops = Array(columns).fill(0);
+
+		function drawMatrix() {
+			// Semi-transparent black to create fading effect
+			ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+			ctx.font = fontSize + 'px monospace';
+
+			for (let i = 0; i < drops.length; i++) {
+				// Pick a random chicken character
+				const char = CHICKEN_CHARS[Math.floor(Math.random() * CHICKEN_CHARS.length)];
+
+				// Chicken matrix colors: green, yellow, orange
+				const colors = ['#00FF00', '#FFFF00', '#FF6600', '#00FFFF'];
+				ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+
+				const x = i * fontSize;
+				const y = drops[i] * fontSize;
+
+				ctx.fillText(char, x, y);
+
+				// Reset drop to top randomly
+				if (y > canvas.height && Math.random() > 0.975) {
+					drops[i] = 0;
+				}
+
+				drops[i]++;
+			}
+		}
+
+		matrixInterval = setInterval(drawMatrix, 50);
 	}
 
 	async function unleashChickens() {
@@ -69,6 +146,22 @@
 	<meta name="description" content="CaaC: Chicken as a CaaC - Enterprise-grade poultry delivery" />
 </svelte:head>
 
+{#if matrixMode}
+	<div
+		class="matrix-overlay"
+		on:click={toggleMatrixMode}
+		on:keydown={(e) => (e.key === 'Escape' || e.key === 'Enter') && toggleMatrixMode()}
+		role="button"
+		tabindex="0"
+		aria-label="Exit chicken matrix mode"
+	>
+		<canvas bind:this={canvas}></canvas>
+		<button class="matrix-exit-button glitch-exit" on:click|stopPropagation={toggleMatrixMode} data-text="CHICKEN">
+			CHICKEN
+		</button>
+	</div>
+{/if}
+
 <main class="container">
 	<header>
 		<h1 class="title">chicken</h1>
@@ -83,18 +176,29 @@
 			<pre>{SCREAMING_CHICKEN}</pre>
 		</div>
 	{:else}
-		<div class="chicken-display">
+		<div
+			class="chicken-display clickable-chicken"
+			on:click={unleashChickens}
+			on:keydown={(e) => e.key === 'Enter' && unleashChickens()}
+			role="button"
+			tabindex="0"
+		>
 			<pre class="ascii-chicken">{CHICKEN_FRAMES[currentFrame]}</pre>
+			{#if isLoading}
+				<div class="loading-text">cluck cluck...</div>
+			{/if}
 		</div>
 	{/if}
 
-	<button
-		class="chicken-button"
-		on:click={unleashChickens}
-		disabled={isLoading}
-	>
-		{isLoading ? 'cluck cluck...' : 'CHICKEN'}
-	</button>
+	<div class="button-row">
+		<button
+			class="matrix-button glitch"
+			on:click={toggleMatrixMode}
+			data-text="CHICKEN"
+		>
+			CHICKEN
+		</button>
+	</div>
 
 	{#if chickenOutput}
 		<div class="chicken-output">
@@ -165,6 +269,51 @@
 		border-radius: 12px;
 		padding: 1.5rem 2rem;
 		box-shadow: 8px 8px 0 #CC5500;
+		position: relative;
+	}
+
+	.clickable-chicken {
+		cursor: pointer;
+		transition: all 0.2s ease;
+		user-select: none;
+	}
+
+	.clickable-chicken:hover {
+		background-color: #4A4A35;
+		border-color: #FF6600;
+		box-shadow: 10px 10px 0 #FF6600;
+		transform: translate(-2px, -2px);
+	}
+
+	.clickable-chicken:active {
+		transform: translate(4px, 4px);
+		box-shadow: 4px 4px 0 #CC5500;
+	}
+
+	.clickable-chicken:hover .ascii-chicken {
+		color: #FFFF00;
+		animation: chicken-bounce 0.5s ease-in-out infinite;
+	}
+
+	@keyframes chicken-bounce {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-5px); }
+	}
+
+	.loading-text {
+		position: absolute;
+		bottom: 10px;
+		left: 50%;
+		transform: translateX(-50%);
+		color: #FF6600;
+		font-weight: bold;
+		font-size: 1.2rem;
+		animation: pulse-loading 1s ease-in-out infinite;
+	}
+
+	@keyframes pulse-loading {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.5; }
 	}
 
 	.ascii-chicken {
@@ -173,6 +322,274 @@
 		color: #CCCCCC;
 		white-space: pre;
 		font-family: 'Courier New', Courier, monospace;
+		transition: color 0.2s ease;
+	}
+
+	.button-row {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.matrix-button {
+		font-size: 1.5rem;
+		font-weight: bold;
+		padding: 1rem 2rem;
+		background-color: #00FF00;
+		color: #000000;
+		border: 4px solid #008000;
+		border-radius: 12px;
+		cursor: pointer;
+		font-family: 'Courier New', Courier, monospace;
+		text-transform: uppercase;
+		box-shadow: 6px 6px 0 #008000;
+		transition: all 0.1s ease;
+		animation: matrix-pulse 2s ease-in-out infinite;
+		position: relative;
+	}
+
+	.matrix-button:hover {
+		background-color: #00FFFF;
+		border-color: #008080;
+		box-shadow: 4px 4px 0 #008080;
+		transform: translate(2px, 2px);
+	}
+
+	.matrix-button:active {
+		transform: translate(4px, 4px);
+		box-shadow: 2px 2px 0 #008000;
+	}
+
+	.glitch {
+		animation: matrix-pulse 2s ease-in-out infinite, glitch 1s infinite;
+	}
+
+	.glitch::before,
+	.glitch::after {
+		content: attr(data-text);
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem 2rem;
+	}
+
+	.glitch::before {
+		animation: glitch-top 0.3s infinite;
+		clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+		-webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+	}
+
+	.glitch::after {
+		animation: glitch-bottom 0.4s infinite;
+		clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+		-webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+	}
+
+	@keyframes matrix-pulse {
+		0%, 100% {
+			box-shadow: 6px 6px 0 #008000, 0 0 10px #00FF00;
+		}
+		50% {
+			box-shadow: 6px 6px 0 #008000, 0 0 20px #00FF00, 0 0 30px #00FF00;
+		}
+	}
+
+	@keyframes glitch {
+		0% {
+			text-shadow: 2px 0 #FF00FF, -2px 0 #00FFFF;
+		}
+		25% {
+			text-shadow: -2px 0 #FF00FF, 2px 0 #00FFFF;
+		}
+		50% {
+			text-shadow: 2px 2px #FF00FF, -2px -2px #00FFFF;
+		}
+		75% {
+			text-shadow: -2px 2px #FF00FF, 2px -2px #00FFFF;
+		}
+		100% {
+			text-shadow: 2px 0 #FF00FF, -2px 0 #00FFFF;
+		}
+	}
+
+	@keyframes glitch-top {
+		0%, 100% {
+			transform: translateX(0);
+		}
+		33% {
+			transform: translateX(-4px);
+			color: #FF00FF;
+		}
+		66% {
+			transform: translateX(4px);
+			color: #00FFFF;
+		}
+	}
+
+	@keyframes glitch-bottom {
+		0%, 100% {
+			transform: translateX(0);
+		}
+		33% {
+			transform: translateX(4px);
+			color: #00FFFF;
+		}
+		66% {
+			transform: translateX(-4px);
+			color: #FFFF00;
+		}
+	}
+
+	.matrix-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		z-index: 9999;
+		background-color: #000000;
+		cursor: pointer;
+	}
+
+	.matrix-overlay canvas {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.matrix-exit-button {
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		z-index: 10000;
+		font-size: 1.5rem;
+		font-weight: bold;
+		padding: 1rem 2rem;
+		background-color: #FF0000;
+		color: #FFFFFF;
+		border: 4px solid #8B0000;
+		border-radius: 12px;
+		cursor: pointer;
+		font-family: 'Courier New', Courier, monospace;
+		text-transform: uppercase;
+		box-shadow: 6px 6px 0 #8B0000;
+		transition: all 0.1s ease;
+		animation: exit-pulse 1.5s ease-in-out infinite;
+	}
+
+	.matrix-exit-button:hover {
+		background-color: #FF4500;
+		transform: translate(2px, 2px);
+		box-shadow: 4px 4px 0 #8B0000;
+	}
+
+	.matrix-exit-button:active {
+		transform: translate(4px, 4px);
+		box-shadow: 2px 2px 0 #8B0000;
+	}
+
+	.glitch-exit {
+		animation: exit-pulse 1.5s ease-in-out infinite, glitch-exit-anim 0.5s infinite;
+		position: relative;
+	}
+
+	.glitch-exit::before,
+	.glitch-exit::after {
+		content: attr(data-text);
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem 2rem;
+	}
+
+	.glitch-exit::before {
+		animation: glitch-exit-top 0.35s infinite;
+		clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+		-webkit-clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+	}
+
+	.glitch-exit::after {
+		animation: glitch-exit-bottom 0.45s infinite;
+		clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+		-webkit-clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+	}
+
+	@keyframes exit-pulse {
+		0%, 100% {
+			box-shadow: 6px 6px 0 #8B0000, 0 0 10px #FF0000;
+		}
+		50% {
+			box-shadow: 6px 6px 0 #8B0000, 0 0 20px #FF0000, 0 0 30px #FF0000;
+		}
+	}
+
+	@keyframes glitch-exit-anim {
+		0% {
+			text-shadow: 3px 0 #00FF00, -3px 0 #FF00FF;
+		}
+		25% {
+			text-shadow: -3px 0 #00FF00, 3px 0 #FFFF00;
+		}
+		50% {
+			text-shadow: 3px 3px #FF00FF, -3px -3px #00FFFF;
+		}
+		75% {
+			text-shadow: -3px 3px #FFFF00, 3px -3px #00FF00;
+		}
+		100% {
+			text-shadow: 3px 0 #00FF00, -3px 0 #FF00FF;
+		}
+	}
+
+	@keyframes glitch-exit-top {
+		0%, 100% {
+			transform: translateX(0);
+		}
+		20% {
+			transform: translateX(-5px);
+			color: #00FF00;
+		}
+		40% {
+			transform: translateX(5px);
+			color: #FF00FF;
+		}
+		60% {
+			transform: translateX(-3px);
+			color: #FFFF00;
+		}
+		80% {
+			transform: translateX(3px);
+			color: #00FFFF;
+		}
+	}
+
+	@keyframes glitch-exit-bottom {
+		0%, 100% {
+			transform: translateX(0);
+		}
+		25% {
+			transform: translateX(5px);
+			color: #FFFF00;
+		}
+		50% {
+			transform: translateX(-5px);
+			color: #00FFFF;
+		}
+		75% {
+			transform: translateX(3px);
+			color: #FF00FF;
+		}
 	}
 
 	.screaming-chicken {
@@ -194,37 +611,6 @@
 		0%, 100% { transform: translateX(0); }
 		25% { transform: translateX(-5px) rotate(-1deg); }
 		75% { transform: translateX(5px) rotate(1deg); }
-	}
-
-	.chicken-button {
-		font-size: 2rem;
-		font-weight: bold;
-		padding: 1rem 3rem;
-		background-color: #FF6600;
-		color: white;
-		border: 4px solid #8B4513;
-		border-radius: 12px;
-		cursor: pointer;
-		font-family: 'Courier New', Courier, monospace;
-		text-transform: uppercase;
-		box-shadow: 6px 6px 0 #8B4513;
-		transition: all 0.1s ease;
-	}
-
-	.chicken-button:hover:not(:disabled) {
-		background-color: #FF4500;
-		transform: translate(2px, 2px);
-		box-shadow: 4px 4px 0 #8B4513;
-	}
-
-	.chicken-button:active:not(:disabled) {
-		transform: translate(4px, 4px);
-		box-shadow: 2px 2px 0 #8B4513;
-	}
-
-	.chicken-button:disabled {
-		background-color: #CCC;
-		cursor: not-allowed;
 	}
 
 	.chicken-output {
