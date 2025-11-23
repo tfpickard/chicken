@@ -344,7 +344,173 @@ export const CHICKEN_FRAMES: string[] = [
       \\_v_/
        | |
       _| |_
-     /_   _\\`
+     /_   _\\`,
+
+	// Frame 38: Dragon chicken
+	`
+     }~~{
+      __//}
+     /)__>\\
+     \\_~_/
+     ~| |~
+      | |_
+     /_   \\`,
+
+	// Frame 39: Robot chicken
+	`
+     [---]
+      _||_
+     |O__O|
+     |_._ |
+      | |
+     =| |=
+    /_   _\\`,
+
+	// Frame 40: Skeleton chicken
+	`
+      __//
+     /o__o\\
+     \\_n_/
+      |X|
+     _| |_
+    /     \\`,
+
+	// Frame 41: Samurai chicken
+	`
+      ___
+     | - |
+      __//
+     /o__o\\==)
+     \\_._/
+      | |
+     _| |_`,
+
+	// Frame 42: Top hat chicken
+	`
+    |====|
+     |  |
+      __//
+     /^__^\\
+     \\_._/
+      | |
+     _| |_`,
+
+	// Frame 43: Chicken with coffee
+	`
+      __//
+     /.__>\\  c
+     \\_._/  U
+      | |
+     _| |_
+    /_   _\\`,
+
+	// Frame 44: Chicken with headphones
+	`
+    D  __// D
+      /~__~\\
+      \\_._/
+       | |
+      _| |_
+     /_   _\\`,
+
+	// Frame 45: Steampunk chicken
+	`
+     (@)
+      __//
+     /O__o\\=[=]
+     \\_._/
+      |*|
+     _| |_`,
+
+	// Frame 46: Ghost chicken
+	`
+      __//
+     /.o_o\\
+     \\_~_/
+      | |
+      ~ ~
+     ~   ~`,
+
+	// Frame 47: Mermaid chicken
+	`
+      __//
+     /.__>\\
+     \\_._/
+      |~|
+     /|~|\\
+    ~~~~~~`,
+
+	// Frame 48: Chicken with jetpack
+	`
+    ]=[ ]=[
+      __//
+     /O__O\\
+     \\_._/
+      | |
+     _| |_`,
+
+	// Frame 49: Viking chicken
+	`
+     (o-o)
+      __//
+     /O__O\\
+     \\_v_/
+      | |
+     _| |_`,
+
+	// Frame 50: Chicken on skateboard
+	`
+      __//
+     /.__>\\
+     \\_._/
+      | |
+     _| |_
+    =O===O=`,
+
+	// Frame 51: Butterfly chicken
+	`
+   {  __//  }
+  { /.__>\\ }
+     \\_._/
+      | |
+     _| |_`,
+
+	// Frame 52: Alien chicken
+	`
+    (/o\\)
+      __//
+     /O__O\\
+     \\_._/
+    <~| |~>
+      | |
+     _| |_`,
+
+	// Frame 53: Vampire chicken
+	`
+    \\_____/
+      __//
+     /o__o\\
+     \\_v_/
+      | |
+     _| |_`,
+
+	// Frame 54: Angel chicken
+	`
+      (O)
+   \\ __// /
+    /^__^\\
+    \\_._/
+     | |
+    _| |_`,
+
+	// Frame 55: Chicken with monocle
+	`
+      __//
+     /@__o\\
+     \\_._/
+      | |
+     _| |_
+    /_   _\\`
 ];
 
 // The screaming chicken for Konami code activation

@@ -44,7 +44,7 @@
 	onMount(() => {
 		// Start the chicken animation at 4 fps (250ms)
 		animationInterval = setInterval(() => {
-			currentFrame = (currentFrame + 1) % 38;
+			currentFrame = (currentFrame + 1) % 56;
 		}, 250);
 
 		// Konami code listener
