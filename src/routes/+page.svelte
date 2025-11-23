@@ -34,10 +34,10 @@
 	// Chicken matrix characters
 	const CHICKEN_CHARS = [
 		'c', 'h', 'i', 'k', 'e', 'n',
-		'🐔', '🐓', '🐤', '🐥', '🐣', '🍗',
+		'𓅱', '𓄿', '𓅢', // Egyptian hieroglyphs: baby chick, vulture, bird with folded wings
 		'鸡', '鷄', '雞', '鶏', '계', '닭',
 		'公鸡', '母鸡', '小鸡', '雏鸡',
-		'蛋', '卵', '🥚',
+		'蛋', '卵',
 		'♈', '⚡', '☄', '✨'
 	];
 
@@ -214,7 +214,8 @@
 			ctx.font = '16px Arial';
 			ctx.textAlign = 'center';
 			ctx.textBaseline = 'middle';
-			ctx.fillText('🐔', 0, 0);
+			// Egyptian hieroglyph: U+133F1 baby chick
+			ctx.fillText('𓅱', 0, 0);
 
 			ctx.restore();
 

@@ -74,11 +74,11 @@
       ctx.translate(this.x, this.y);
       ctx.rotate(this.angle);
 
-      // Draw chicken emoji
+      // Draw Egyptian hieroglyph: U+133F1 baby chick
       ctx.font = '16px Arial';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('🐔', 0, 0);
+      ctx.fillText('𓅱', 0, 0);
 
       ctx.restore();
 
