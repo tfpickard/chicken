@@ -149,8 +149,8 @@
 {#if matrixMode}
 	<div class="matrix-overlay">
 		<canvas bind:this={canvas}></canvas>
-		<button class="matrix-exit-button" on:click={toggleMatrixMode}>
-			EXIT MATRIX 🐔
+		<button class="matrix-exit-button glitch-exit" on:click={toggleMatrixMode} data-text="CHICKEN">
+			CHICKEN
 		</button>
 	</div>
 {/if}
@@ -184,10 +184,11 @@
 		</button>
 
 		<button
-			class="matrix-button"
+			class="matrix-button glitch"
 			on:click={toggleMatrixMode}
+			data-text="CHICKEN"
 		>
-			🐔 MATRIX MODE 🐔
+			CHICKEN
 		</button>
 	</div>
 
@@ -291,6 +292,7 @@
 		box-shadow: 6px 6px 0 #008000;
 		transition: all 0.1s ease;
 		animation: matrix-pulse 2s ease-in-out infinite;
+		position: relative;
 	}
 
 	.matrix-button:hover {
@@ -305,12 +307,88 @@
 		box-shadow: 2px 2px 0 #008000;
 	}
 
+	.glitch {
+		animation: matrix-pulse 2s ease-in-out infinite, glitch 1s infinite;
+	}
+
+	.glitch::before,
+	.glitch::after {
+		content: attr(data-text);
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem 2rem;
+	}
+
+	.glitch::before {
+		animation: glitch-top 0.3s infinite;
+		clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+		-webkit-clip-path: polygon(0 0, 100% 0, 100% 33%, 0 33%);
+	}
+
+	.glitch::after {
+		animation: glitch-bottom 0.4s infinite;
+		clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+		-webkit-clip-path: polygon(0 67%, 100% 67%, 100% 100%, 0 100%);
+	}
+
 	@keyframes matrix-pulse {
 		0%, 100% {
 			box-shadow: 6px 6px 0 #008000, 0 0 10px #00FF00;
 		}
 		50% {
 			box-shadow: 6px 6px 0 #008000, 0 0 20px #00FF00, 0 0 30px #00FF00;
+		}
+	}
+
+	@keyframes glitch {
+		0% {
+			text-shadow: 2px 0 #FF00FF, -2px 0 #00FFFF;
+		}
+		25% {
+			text-shadow: -2px 0 #FF00FF, 2px 0 #00FFFF;
+		}
+		50% {
+			text-shadow: 2px 2px #FF00FF, -2px -2px #00FFFF;
+		}
+		75% {
+			text-shadow: -2px 2px #FF00FF, 2px -2px #00FFFF;
+		}
+		100% {
+			text-shadow: 2px 0 #FF00FF, -2px 0 #00FFFF;
+		}
+	}
+
+	@keyframes glitch-top {
+		0%, 100% {
+			transform: translateX(0);
+		}
+		33% {
+			transform: translateX(-4px);
+			color: #FF00FF;
+		}
+		66% {
+			transform: translateX(4px);
+			color: #00FFFF;
+		}
+	}
+
+	@keyframes glitch-bottom {
+		0%, 100% {
+			transform: translateX(0);
+		}
+		33% {
+			transform: translateX(4px);
+			color: #00FFFF;
+		}
+		66% {
+			transform: translateX(-4px);
+			color: #FFFF00;
 		}
 	}
 
@@ -361,12 +439,101 @@
 		box-shadow: 2px 2px 0 #8B0000;
 	}
 
+	.glitch-exit {
+		animation: exit-pulse 1.5s ease-in-out infinite, glitch-exit-anim 0.5s infinite;
+		position: relative;
+	}
+
+	.glitch-exit::before,
+	.glitch-exit::after {
+		content: attr(data-text);
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 1rem 2rem;
+	}
+
+	.glitch-exit::before {
+		animation: glitch-exit-top 0.35s infinite;
+		clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+		-webkit-clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+	}
+
+	.glitch-exit::after {
+		animation: glitch-exit-bottom 0.45s infinite;
+		clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+		-webkit-clip-path: polygon(0 60%, 100% 60%, 100% 100%, 0 100%);
+	}
+
 	@keyframes exit-pulse {
 		0%, 100% {
 			box-shadow: 6px 6px 0 #8B0000, 0 0 10px #FF0000;
 		}
 		50% {
 			box-shadow: 6px 6px 0 #8B0000, 0 0 20px #FF0000, 0 0 30px #FF0000;
+		}
+	}
+
+	@keyframes glitch-exit-anim {
+		0% {
+			text-shadow: 3px 0 #00FF00, -3px 0 #FF00FF;
+		}
+		25% {
+			text-shadow: -3px 0 #00FF00, 3px 0 #FFFF00;
+		}
+		50% {
+			text-shadow: 3px 3px #FF00FF, -3px -3px #00FFFF;
+		}
+		75% {
+			text-shadow: -3px 3px #FFFF00, 3px -3px #00FF00;
+		}
+		100% {
+			text-shadow: 3px 0 #00FF00, -3px 0 #FF00FF;
+		}
+	}
+
+	@keyframes glitch-exit-top {
+		0%, 100% {
+			transform: translateX(0);
+		}
+		20% {
+			transform: translateX(-5px);
+			color: #00FF00;
+		}
+		40% {
+			transform: translateX(5px);
+			color: #FF00FF;
+		}
+		60% {
+			transform: translateX(-3px);
+			color: #FFFF00;
+		}
+		80% {
+			transform: translateX(3px);
+			color: #00FFFF;
+		}
+	}
+
+	@keyframes glitch-exit-bottom {
+		0%, 100% {
+			transform: translateX(0);
+		}
+		25% {
+			transform: translateX(5px);
+			color: #FFFF00;
+		}
+		50% {
+			transform: translateX(-5px);
+			color: #00FFFF;
+		}
+		75% {
+			transform: translateX(3px);
+			color: #FF00FF;
 		}
 	}
 
