@@ -377,21 +377,21 @@
 	{/if}
 
 	<div class="vicsek-container">
-		<h2 class="vicsek-title">🐔 Chicken Flocking</h2>
+		<h2 class="vicsek-title">🐔 chicken(t)</h2>
 		<div class="vicsek-content">
 			<div class="vicsek-canvas-container">
 				<canvas bind:this={vicsekCanvas} class="vicsek-canvas"></canvas>
 				<div class="vicsek-stats">
-					<span>FPS: {vicsekFps}</span>
-					<span>Chickens: {particles.length}</span>
-					<span>Flockiness: {avgAlignment.toFixed(3)}</span>
+					<span>fps(🐔): {vicsekFps}</span>
+					<span>n(🐔): {particles.length}</span>
+					<span>Φ(chicken): {avgAlignment.toFixed(3)}</span>
 				</div>
 			</div>
 			<div class="vicsek-controls">
-				<button on:click={resetVicsek} class="vicsek-btn">🔄 Reset</button>
+				<button on:click={resetVicsek} class="vicsek-btn">🔄 chicken.reset()</button>
 
 				<label class="vicsek-control">
-					<span>Flock Size: {particleCount}</span>
+					<span>||chickens||: {particleCount}</span>
 					<input
 						type="range"
 						bind:value={particleCount}
@@ -403,7 +403,7 @@
 				</label>
 
 				<label class="vicsek-control">
-					<span>Chicken Speed: {speed.toFixed(1)}</span>
+					<span>|v⃗(chicken)|: {speed.toFixed(1)}</span>
 					<input
 						type="range"
 						bind:value={speed}
@@ -414,7 +414,7 @@
 				</label>
 
 				<label class="vicsek-control">
-					<span>Chicken Chaos: {noiseStrength.toFixed(2)}</span>
+					<span>η(chicken): {noiseStrength.toFixed(2)}</span>
 					<input
 						type="range"
 						bind:value={noiseStrength}
@@ -425,7 +425,7 @@
 				</label>
 
 				<label class="vicsek-control">
-					<span>Chicken Vision: {neighborRadius}</span>
+					<span>R(chicken): {neighborRadius}</span>
 					<input
 						type="range"
 						bind:value={neighborRadius}
