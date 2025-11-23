@@ -214,8 +214,7 @@
 			ctx.font = '16px Arial';
 			ctx.textAlign = 'center';
 			ctx.textBaseline = 'middle';
-			// Egyptian hieroglyph: U+133F1 baby chick
-			ctx.fillText('𓅱', 0, 0);
+			ctx.fillText('🐔', 0, 0);
 
 			ctx.restore();
 
