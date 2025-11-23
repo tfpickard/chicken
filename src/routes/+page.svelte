@@ -1055,14 +1055,24 @@
 		font-weight: bold;
 	}
 
+	.vector-text::before {
+		content: '';
+		position: absolute;
+		top: -6px;
+		left: 0;
+		right: 0;
+		height: 0;
+		border-top: 2px solid #FF6600;
+	}
+
 	.vector-text::after {
 		content: '→';
 		position: absolute;
-		top: -8px;
-		left: 50%;
-		transform: translateX(-50%) rotate(0deg);
+		top: -14px;
+		right: -8px;
 		font-size: 1.2em;
 		color: #FF6600;
+		line-height: 1;
 	}
 
 	@media (max-width: 768px) {
