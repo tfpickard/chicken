@@ -147,9 +147,16 @@
 </svelte:head>
 
 {#if matrixMode}
-	<div class="matrix-overlay">
+	<div
+		class="matrix-overlay"
+		on:click={toggleMatrixMode}
+		on:keydown={(e) => (e.key === 'Escape' || e.key === 'Enter') && toggleMatrixMode()}
+		role="button"
+		tabindex="0"
+		aria-label="Exit chicken matrix mode"
+	>
 		<canvas bind:this={canvas}></canvas>
-		<button class="matrix-exit-button glitch-exit" on:click={toggleMatrixMode} data-text="CHICKEN">
+		<button class="matrix-exit-button glitch-exit" on:click|stopPropagation={toggleMatrixMode} data-text="CHICKEN">
 			CHICKEN
 		</button>
 	</div>
@@ -447,6 +454,7 @@
 		height: 100vh;
 		z-index: 9999;
 		background-color: #000000;
+		cursor: pointer;
 	}
 
 	.matrix-overlay canvas {
