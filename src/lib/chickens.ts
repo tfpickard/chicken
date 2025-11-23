@@ -164,6 +164,186 @@ export const CHICKEN_FRAMES: string[] = [
       \\_._/
        | |
       _| |_
+     /_   _\\`,
+
+	// Frame 18: Running chicken
+	`
+       __//
+      /.__>\\>>>
+      \\_._/
+       |/
+      _|
+     /_`,
+
+	// Frame 19: Thicc chicken
+	`
+       __//
+      /O__O\\
+     ((\_._/))
+       | |
+      _| |_
+     /_   _\\`,
+
+	// Frame 20: Baby chicken (chick)
+	`
+      __/
+     /.>
+     (.)
+      |
+     _|_`,
+
+	// Frame 21: Ninja chicken
+	`
+     * __//*
+      /o__o\\
+      \\_X_/
+       |/|
+      _|_|_
+     /_   _\\`,
+
+	// Frame 22: Chef chicken
+	`
+     [===]
+      __//
+     /.__>\\
+     \\_._/
+      | |
+     _| |_`,
+
+	// Frame 23: Boxing chicken
+	`
+    O  __// O
+      /.__>\\
+      \\_v_/
+       | |
+      _| |_
+     /_   _\\`,
+
+	// Frame 24: Dizzy chicken
+	`
+      @  @
+       __//
+      /x__x\\
+      \\_~_/
+       | |
+      _| |_`,
+
+	// Frame 25: Royal chicken (with crown)
+	`
+      \\/\\/
+       __//
+      /.__>\\
+      \\_._/
+       | |
+      _| |_
+     /_   _\\`,
+
+	// Frame 26: Superhero chicken
+	`
+       __//
+      /O__O\\
+     [[\\_._/]]
+       | |
+      _| |_
+     /_   _\\`,
+
+	// Frame 27: Wizard chicken
+	`
+    *  __//*
+   *  /.^>\\  *
+      \\_._/
+       |*|
+      _| |_
+     /_   _\\`,
+
+	// Frame 28: Chicken laying egg
+	`
+       __//
+      /.__>\\
+      \\_._/
+       | |
+      _| |_  O
+     /_   _\\`,
+
+	// Frame 29: Backwards chicken
+	`
+      \\\\__
+      /<._.\\
+       /._/
+       | |
+      _| |_
+     /_   _\\`,
+
+	// Frame 30: Startled chicken
+	`
+    !  __//  !
+      /O__O\\
+      \\_^_/
+      /| |\\
+     / | | \\
+    /__| |__\\`,
+
+	// Frame 31: Detective chicken
+	`
+       __//
+      /o__O\\
+      \\_._/~
+       | |
+      _| |_
+     /_   _\\`,
+
+	// Frame 32: Pirate chicken
+	`
+       __//
+      /X__o\\~
+      \\_._/
+       | |
+      _| |_
+     /_   _\\`,
+
+	// Frame 33: Chicken with bow tie
+	`
+       __//
+      /^__^\\
+      \\_<>_/
+       | |
+      _| |_
+     /_   _\\`,
+
+	// Frame 34: Astronaut chicken
+	`
+     (_____)
+      |_//|
+      /.__>\\
+      \\_._/
+       | |
+      _| |_`,
+
+	// Frame 35: Chicken on one leg
+	`
+       __//
+      /.__>\\
+      \\_._/
+       |
+       |
+      _|_`,
+
+	// Frame 36: Rainbow chicken
+	`
+   ~*~__//~*~
+     /^__^\\
+     \\_._/
+      | |
+     _| |_
+    /_   _\\`,
+
+	// Frame 37: Grumpy chicken
+	`
+       __//
+      />__<\\
+      \\_v_/
+       | |
+      _| |_
      /_   _\\`
 ];
 

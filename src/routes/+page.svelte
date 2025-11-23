@@ -44,7 +44,7 @@
 	onMount(() => {
 		// Start the chicken animation at 4 fps (250ms)
 		animationInterval = setInterval(() => {
-			currentFrame = (currentFrame + 1) % 18;
+			currentFrame = (currentFrame + 1) % 38;
 		}, 250);
 
 		// Konami code listener
@@ -362,11 +362,6 @@
 		>
 			CHICKEN
 		</button>
-		<a href="/simulation" class="simulation-link">
-			<button class="simulation-button">
-				🐔 FLOCKING SIMULATION
-			</button>
-		</a>
 	</div>
 
 	{#if chickenOutput}
@@ -506,6 +501,11 @@
 		padding: 1.5rem 2rem;
 		box-shadow: 8px 8px 0 #CC5500;
 		position: relative;
+		min-height: 200px;
+		min-width: 400px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.clickable-chicken {
@@ -595,47 +595,6 @@
 	.matrix-button:active {
 		transform: translate(4px, 4px);
 		box-shadow: 2px 2px 0 #008000;
-	}
-
-	.simulation-link {
-		text-decoration: none;
-	}
-
-	.simulation-button {
-		font-size: 1.5rem;
-		font-weight: bold;
-		padding: 1rem 2rem;
-		background-color: #FF6600;
-		color: #FFFFFF;
-		border: 4px solid #CC5500;
-		border-radius: 12px;
-		cursor: pointer;
-		font-family: 'Courier New', Courier, monospace;
-		text-transform: uppercase;
-		box-shadow: 6px 6px 0 #CC5500;
-		transition: all 0.1s ease;
-		animation: simulation-pulse 2s ease-in-out infinite;
-	}
-
-	.simulation-button:hover {
-		background-color: #FF8800;
-		border-color: #FF6600;
-		box-shadow: 4px 4px 0 #FF6600;
-		transform: translate(2px, 2px);
-	}
-
-	.simulation-button:active {
-		transform: translate(4px, 4px);
-		box-shadow: 2px 2px 0 #CC5500;
-	}
-
-	@keyframes simulation-pulse {
-		0%, 100% {
-			box-shadow: 6px 6px 0 #CC5500, 0 0 10px #FF6600;
-		}
-		50% {
-			box-shadow: 6px 6px 0 #CC5500, 0 0 20px #FF6600, 0 0 30px #FF6600;
-		}
 	}
 
 	.glitch {
