@@ -13,6 +13,20 @@
 	let ctx;
 	let matrixInterval;
 
+	// Vicsek simulation
+	let vicsekCanvas;
+	let vicsekCtx;
+	let particles = [];
+	let vicsekAnimationId;
+	let particleCount = 100;
+	let speed = 2.0;
+	let noiseStrength = 0.3;
+	let neighborRadius = 50;
+	let showVectors = false;
+	let vicsekFps = 0;
+	let vicsekLastTime = 0;
+	let avgAlignment = 0;
+
 	// Konami code sequence
 	const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
 	let konamiIndex = 0;
@@ -35,6 +49,15 @@
 
 		// Konami code listener
 		window.addEventListener('keydown', handleKonami);
+
+		// Initialize Vicsek simulation
+		if (vicsekCanvas) {
+			vicsekCtx = vicsekCanvas.getContext('2d');
+			vicsekCanvas.width = 800;
+			vicsekCanvas.height = 400;
+			initVicsekSimulation();
+			vicsekAnimationId = requestAnimationFrame(animateVicsek);
+		}
 	});
 
 	onDestroy(() => {
@@ -43,6 +66,9 @@
 		}
 		if (matrixInterval) {
 			clearInterval(matrixInterval);
+		}
+		if (vicsekAnimationId) {
+			cancelAnimationFrame(vicsekAnimationId);
 		}
 		if (typeof window !== 'undefined') {
 			window.removeEventListener('keydown', handleKonami);
@@ -139,6 +165,144 @@
 			isLoading = false;
 		}
 	}
+
+	// Vicsek simulation classes and functions
+	class Particle {
+		constructor(width, height) {
+			this.x = Math.random() * width;
+			this.y = Math.random() * height;
+			this.angle = Math.random() * Math.PI * 2;
+			this.vx = Math.cos(this.angle) * speed;
+			this.vy = Math.sin(this.angle) * speed;
+		}
+
+		update(neighbors, width, height) {
+			let avgAngle = this.angle;
+
+			if (neighbors.length > 0) {
+				let sumSin = Math.sin(this.angle);
+				let sumCos = Math.cos(this.angle);
+
+				neighbors.forEach(p => {
+					sumSin += Math.sin(p.angle);
+					sumCos += Math.cos(p.angle);
+				});
+
+				avgAngle = Math.atan2(sumSin, sumCos);
+			}
+
+			avgAngle += (Math.random() - 0.5) * noiseStrength * Math.PI;
+
+			this.angle = avgAngle;
+			this.vx = Math.cos(this.angle) * speed;
+			this.vy = Math.sin(this.angle) * speed;
+
+			this.x += this.vx;
+			this.y += this.vy;
+
+			if (this.x < 0) this.x += width;
+			if (this.x > width) this.x -= width;
+			if (this.y < 0) this.y += height;
+			if (this.y > height) this.y -= height;
+		}
+
+		draw(ctx) {
+			ctx.save();
+			ctx.translate(this.x, this.y);
+			ctx.rotate(this.angle);
+
+			ctx.font = '16px Arial';
+			ctx.textAlign = 'center';
+			ctx.textBaseline = 'middle';
+			ctx.fillText('🐔', 0, 0);
+
+			ctx.restore();
+
+			if (showVectors) {
+				ctx.strokeStyle = '#00FFFF';
+				ctx.lineWidth = 1;
+				ctx.beginPath();
+				ctx.moveTo(this.x, this.y);
+				ctx.lineTo(this.x + this.vx * 5, this.y + this.vy * 5);
+				ctx.stroke();
+			}
+		}
+
+		distanceTo(other, width, height) {
+			let dx = Math.abs(this.x - other.x);
+			let dy = Math.abs(this.y - other.y);
+
+			if (dx > width / 2) dx = width - dx;
+			if (dy > height / 2) dy = height - dy;
+
+			return Math.sqrt(dx * dx + dy * dy);
+		}
+	}
+
+	function initVicsekSimulation() {
+		if (!vicsekCanvas) return;
+
+		const width = vicsekCanvas.width;
+		const height = vicsekCanvas.height;
+
+		particles = [];
+		for (let i = 0; i < particleCount; i++) {
+			particles.push(new Particle(width, height));
+		}
+	}
+
+	function animateVicsek(timestamp) {
+		if (vicsekLastTime) {
+			vicsekFps = Math.round(1000 / (timestamp - vicsekLastTime));
+		}
+		vicsekLastTime = timestamp;
+
+		const width = vicsekCanvas.width;
+		const height = vicsekCanvas.height;
+
+		vicsekCtx.fillStyle = '#FFFACD';
+		vicsekCtx.fillRect(0, 0, width, height);
+
+		vicsekCtx.strokeStyle = 'rgba(0, 0, 0, 0.05)';
+		vicsekCtx.lineWidth = 1;
+		for (let i = 0; i < width; i += 50) {
+			vicsekCtx.beginPath();
+			vicsekCtx.moveTo(i, 0);
+			vicsekCtx.lineTo(i, height);
+			vicsekCtx.stroke();
+		}
+		for (let i = 0; i < height; i += 50) {
+			vicsekCtx.beginPath();
+			vicsekCtx.moveTo(0, i);
+			vicsekCtx.lineTo(width, i);
+			vicsekCtx.stroke();
+		}
+
+		let totalAlignment = 0;
+		particles.forEach(p => {
+			const neighbors = particles.filter(other => {
+				if (p === other) return false;
+				return p.distanceTo(other, width, height) < neighborRadius;
+			});
+
+			p.update(neighbors, width, height);
+			totalAlignment += Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+		});
+
+		avgAlignment = totalAlignment / (particles.length * speed);
+
+		particles.forEach(p => p.draw(vicsekCtx));
+
+		vicsekAnimationId = requestAnimationFrame(animateVicsek);
+	}
+
+	function resetVicsek() {
+		initVicsekSimulation();
+	}
+
+	function handleParticleCountChange() {
+		initVicsekSimulation();
+	}
 </script>
 
 <svelte:head>
@@ -216,6 +380,73 @@
 			</div>
 		</div>
 	{/if}
+
+	<div class="vicsek-container">
+		<h2 class="vicsek-title">🐔 Chicken Flocking</h2>
+		<div class="vicsek-content">
+			<div class="vicsek-canvas-container">
+				<canvas bind:this={vicsekCanvas} class="vicsek-canvas"></canvas>
+				<div class="vicsek-stats">
+					<span>FPS: {vicsekFps}</span>
+					<span>Chickens: {particles.length}</span>
+					<span>Flockiness: {avgAlignment.toFixed(3)}</span>
+				</div>
+			</div>
+			<div class="vicsek-controls">
+				<button on:click={resetVicsek} class="vicsek-btn">🔄 Reset</button>
+
+				<label class="vicsek-control">
+					<span>Flock Size: {particleCount}</span>
+					<input
+						type="range"
+						bind:value={particleCount}
+						min="10"
+						max="300"
+						step="10"
+						on:change={handleParticleCountChange}
+					/>
+				</label>
+
+				<label class="vicsek-control">
+					<span>Chicken Speed: {speed.toFixed(1)}</span>
+					<input
+						type="range"
+						bind:value={speed}
+						min="0.5"
+						max="5"
+						step="0.1"
+					/>
+				</label>
+
+				<label class="vicsek-control">
+					<span>Chicken Chaos: {noiseStrength.toFixed(2)}</span>
+					<input
+						type="range"
+						bind:value={noiseStrength}
+						min="0"
+						max="2"
+						step="0.05"
+					/>
+				</label>
+
+				<label class="vicsek-control">
+					<span>Chicken Vision: {neighborRadius}</span>
+					<input
+						type="range"
+						bind:value={neighborRadius}
+						min="10"
+						max="150"
+						step="5"
+					/>
+				</label>
+
+				<label class="vicsek-checkbox">
+					<input type="checkbox" bind:checked={showVectors} />
+					Show Chicken Vectors
+				</label>
+			</div>
+		</div>
+	</div>
 
 	<footer>
 		<p>Chicen Agents for Enterprise Chickentic Solutions since 1974</p>
@@ -737,5 +968,131 @@
 		color: #663399;
 		margin-top: 0.5rem;
 		opacity: 0.9;
+	}
+
+	/* Vicsek Simulation Styles */
+	.vicsek-container {
+		width: 100%;
+		max-width: 900px;
+		background: rgba(255, 255, 255, 0.8);
+		border: 4px solid #FF6600;
+		border-radius: 12px;
+		padding: 1.5rem;
+		box-shadow: 8px 8px 0 #FF6600;
+	}
+
+	.vicsek-title {
+		font-size: 2rem;
+		color: #FF6600;
+		text-align: center;
+		margin: 0 0 1.5rem 0;
+		text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+	}
+
+	.vicsek-content {
+		display: flex;
+		gap: 1.5rem;
+		flex-wrap: wrap;
+	}
+
+	.vicsek-canvas-container {
+		flex: 1;
+		min-width: 300px;
+	}
+
+	.vicsek-canvas {
+		width: 100%;
+		height: auto;
+		border: 3px solid #CC5500;
+		border-radius: 8px;
+		background: #FFFACD;
+		display: block;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	}
+
+	.vicsek-stats {
+		display: flex;
+		justify-content: space-around;
+		margin-top: 1rem;
+		padding: 0.5rem;
+		background: rgba(255, 215, 0, 0.3);
+		border-radius: 4px;
+		border: 2px solid #FFD700;
+	}
+
+	.vicsek-stats span {
+		font-weight: bold;
+		color: #CC5500;
+		font-size: 0.9rem;
+	}
+
+	.vicsek-controls {
+		flex: 0 0 200px;
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.vicsek-btn {
+		background: #FF6600;
+		color: white;
+		border: 3px solid #CC5500;
+		padding: 0.75rem 1rem;
+		border-radius: 8px;
+		cursor: pointer;
+		font-size: 1rem;
+		font-weight: bold;
+		transition: all 0.2s;
+		box-shadow: 4px 4px 0 #CC5500;
+	}
+
+	.vicsek-btn:hover {
+		background: #FF8800;
+		transform: translate(-2px, -2px);
+		box-shadow: 6px 6px 0 #CC5500;
+	}
+
+	.vicsek-btn:active {
+		transform: translate(2px, 2px);
+		box-shadow: 2px 2px 0 #CC5500;
+	}
+
+	.vicsek-control {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.vicsek-control span {
+		font-weight: bold;
+		color: #CC5500;
+		font-size: 0.9rem;
+	}
+
+	.vicsek-control input[type="range"] {
+		width: 100%;
+		accent-color: #FF6600;
+	}
+
+	.vicsek-checkbox {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.9rem;
+		color: #4A3A20;
+	}
+
+	.vicsek-checkbox input[type="checkbox"] {
+		accent-color: #FF6600;
+	}
+
+	@media (max-width: 768px) {
+		.vicsek-content {
+			flex-direction: column;
+		}
+
+		.vicsek-controls {
+			flex: 1;
+		}
 	}
 </style>

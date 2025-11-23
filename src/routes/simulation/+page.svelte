@@ -6,7 +6,6 @@
   let ctx: CanvasRenderingContext2D;
   let particles: Particle[] = [];
   let animationId: number;
-  let isRunning = false;
 
   // Simulation parameters
   let particleCount = 150;
@@ -75,26 +74,11 @@
       ctx.translate(this.x, this.y);
       ctx.rotate(this.angle);
 
-      // Draw chicken-like shape
-      ctx.fillStyle = '#FF6600';
-      ctx.beginPath();
-      ctx.ellipse(0, 0, 6, 4, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Beak
-      ctx.fillStyle = '#FFD700';
-      ctx.beginPath();
-      ctx.moveTo(6, 0);
-      ctx.lineTo(10, -2);
-      ctx.lineTo(10, 2);
-      ctx.closePath();
-      ctx.fill();
-
-      // Eye
-      ctx.fillStyle = '#000000';
-      ctx.beginPath();
-      ctx.arc(2, -2, 1, 0, Math.PI * 2);
-      ctx.fill();
+      // Draw chicken emoji
+      ctx.font = '16px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🐔', 0, 0);
 
       ctx.restore();
 
@@ -142,8 +126,6 @@
   }
 
   function animate(timestamp: number) {
-    if (!isRunning) return;
-
     // Calculate FPS
     if (lastTime) {
       fps = Math.round(1000 / (timestamp - lastTime));
@@ -202,22 +184,8 @@
     animationId = requestAnimationFrame(animate);
   }
 
-  function start() {
-    isRunning = true;
-    animationId = requestAnimationFrame(animate);
-  }
-
-  function pause() {
-    isRunning = false;
-    if (animationId) {
-      cancelAnimationFrame(animationId);
-    }
-  }
-
   function reset() {
-    pause();
     initSimulation();
-    if (isRunning) start();
   }
 
   function handleParticleCountChange() {
@@ -229,11 +197,13 @@
     canvas.width = 800;
     canvas.height = 600;
     initSimulation();
-    start();
+    animationId = requestAnimationFrame(animate);
   });
 
   onDestroy(() => {
-    pause();
+    if (animationId) {
+      cancelAnimationFrame(animationId);
+    }
   });
 </script>
 
@@ -243,31 +213,27 @@
 
 <main class="container">
   <h1>🐔 Chicken Flocking Simulation</h1>
-  <p class="subtitle">Vicsek Model: Collective Motion in Active Matter</p>
 
   <div class="content">
     <div class="canvas-container">
       <canvas bind:this={canvas}></canvas>
       <div class="stats">
         <span>FPS: {fps}</span>
-        <span>Particles: {particles.length}</span>
-        <span>Alignment: {avgAlignment.toFixed(3)}</span>
+        <span>Chickens: {particles.length}</span>
+        <span>Flockiness: {avgAlignment.toFixed(3)}</span>
       </div>
     </div>
 
     <div class="controls">
-      <h2>Controls</h2>
+      <h2>Chicken Controls</h2>
 
       <div class="control-group">
-        <button on:click={() => isRunning ? pause() : start()} class="btn">
-          {isRunning ? '⏸ Pause' : '▶ Play'}
-        </button>
-        <button on:click={reset} class="btn">🔄 Reset</button>
+        <button on:click={reset} class="btn">🔄 Reset Chickens</button>
       </div>
 
       <div class="control-group">
         <label>
-          <span>Chickens: {particleCount}</span>
+          <span>Flock Size: {particleCount}</span>
           <input
             type="range"
             bind:value={particleCount}
@@ -281,7 +247,7 @@
 
       <div class="control-group">
         <label>
-          <span>Speed: {speed.toFixed(1)}</span>
+          <span>Chicken Speed: {speed.toFixed(1)}</span>
           <input
             type="range"
             bind:value={speed}
@@ -294,7 +260,7 @@
 
       <div class="control-group">
         <label>
-          <span>Noise: {noiseStrength.toFixed(2)}</span>
+          <span>Chicken Chaos: {noiseStrength.toFixed(2)}</span>
           <input
             type="range"
             bind:value={noiseStrength}
@@ -307,7 +273,7 @@
 
       <div class="control-group">
         <label>
-          <span>Neighbor Radius: {neighborRadius}</span>
+          <span>Chicken Vision: {neighborRadius}</span>
           <input
             type="range"
             bind:value={neighborRadius}
@@ -321,36 +287,15 @@
       <div class="control-group">
         <label>
           <input type="checkbox" bind:checked={showVectors} />
-          Show Velocity Vectors
+          Show Chicken Vectors
         </label>
       </div>
 
       <div class="control-group">
         <label>
           <input type="checkbox" bind:checked={showNeighbors} />
-          Show Neighbor Radius (first chicken)
+          Show Vision Range
         </label>
-      </div>
-
-      <div class="info">
-        <h3>About the Vicsek Model</h3>
-        <p>
-          The Vicsek model demonstrates how simple local interactions can lead to
-          complex collective behavior. Each chicken:
-        </p>
-        <ul>
-          <li>Moves at constant speed</li>
-          <li>Aligns with neighbors within a radius</li>
-          <li>Experiences random directional noise</li>
-        </ul>
-        <p>
-          <strong>Low noise:</strong> Chickens form coordinated flocks<br>
-          <strong>High noise:</strong> Disordered, independent wandering
-        </p>
-        <p>
-          The <strong>alignment parameter</strong> (0-1) measures collective order.
-          Values near 1 indicate strong flocking.
-        </p>
       </div>
     </div>
   </div>
@@ -373,15 +318,8 @@
     font-size: 2.5rem;
     color: #FF6600;
     text-align: center;
-    margin-bottom: 0.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  }
-
-  .subtitle {
-    text-align: center;
-    font-size: 1.2rem;
-    color: #CC5500;
     margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
   }
 
   .content {
@@ -483,30 +421,6 @@
 
   .btn:active {
     transform: translateY(2px);
-  }
-
-  .info {
-    margin-top: 1.5rem;
-    padding: 1rem;
-    background: rgba(255, 215, 0, 0.3);
-    border-radius: 4px;
-    border: 2px solid #FFD700;
-  }
-
-  .info h3 {
-    margin-top: 0;
-    color: #CC5500;
-  }
-
-  .info p, .info ul {
-    font-size: 0.9rem;
-    line-height: 1.5;
-    color: #4A3A20;
-  }
-
-  .info ul {
-    margin: 0.5rem 0;
-    padding-left: 1.5rem;
   }
 
   .back-link {
