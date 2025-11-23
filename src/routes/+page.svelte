@@ -8,10 +8,24 @@
 	let animationInterval;
 	let konamiActivated = false;
 	let chickenCount = Math.floor(Math.random() * 1000);
+	let matrixMode = false;
+	let canvas;
+	let ctx;
+	let matrixInterval;
 
 	// Konami code sequence
 	const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
 	let konamiIndex = 0;
+
+	// Chicken matrix characters
+	const CHICKEN_CHARS = [
+		'c', 'h', 'i', 'k', 'e', 'n',
+		'🐔', '🐓', '🐤', '🐥', '🐣', '🍗',
+		'鸡', '鷄', '雞', '鶏', '계', '닭',
+		'公鸡', '母鸡', '小鸡', '雏鸡',
+		'蛋', '卵', '🥚',
+		'♈', '⚡', '☄', '✨'
+	];
 
 	onMount(() => {
 		// Start the chicken animation at 4 fps (250ms)
@@ -26,6 +40,9 @@
 	onDestroy(() => {
 		if (animationInterval) {
 			clearInterval(animationInterval);
+		}
+		if (matrixInterval) {
+			clearInterval(matrixInterval);
 		}
 		if (typeof window !== 'undefined') {
 			window.removeEventListener('keydown', handleKonami);
@@ -46,6 +63,66 @@
 		} else {
 			konamiIndex = 0;
 		}
+	}
+
+	function toggleMatrixMode() {
+		matrixMode = !matrixMode;
+
+		if (matrixMode) {
+			// Start matrix animation
+			setTimeout(() => {
+				if (canvas) {
+					initMatrix();
+				}
+			}, 50);
+		} else {
+			// Stop matrix animation
+			if (matrixInterval) {
+				clearInterval(matrixInterval);
+				matrixInterval = null;
+			}
+		}
+	}
+
+	function initMatrix() {
+		ctx = canvas.getContext('2d');
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+
+		const fontSize = 16;
+		const columns = Math.floor(canvas.width / fontSize);
+		const drops = Array(columns).fill(0);
+
+		function drawMatrix() {
+			// Semi-transparent black to create fading effect
+			ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+			ctx.font = fontSize + 'px monospace';
+
+			for (let i = 0; i < drops.length; i++) {
+				// Pick a random chicken character
+				const char = CHICKEN_CHARS[Math.floor(Math.random() * CHICKEN_CHARS.length)];
+
+				// Chicken matrix colors: green, yellow, orange
+				const colors = ['#00FF00', '#FFFF00', '#FF6600', '#00FFFF'];
+				ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+
+				const x = i * fontSize;
+				const y = drops[i] * fontSize;
+
+				ctx.fillText(char, x, y);
+
+				// Reset drop to top randomly
+				if (y > canvas.height && Math.random() > 0.975) {
+					drops[i] = 0;
+				}
+
+				drops[i]++;
+			}
+		}
+
+		matrixInterval = setInterval(drawMatrix, 50);
 	}
 
 	async function unleashChickens() {
@@ -69,6 +146,15 @@
 	<meta name="description" content="CaaC: Chicken as a CaaC - Enterprise-grade poultry delivery" />
 </svelte:head>
 
+{#if matrixMode}
+	<div class="matrix-overlay">
+		<canvas bind:this={canvas}></canvas>
+		<button class="matrix-exit-button" on:click={toggleMatrixMode}>
+			EXIT MATRIX 🐔
+		</button>
+	</div>
+{/if}
+
 <main class="container">
 	<header>
 		<h1 class="title">chicken</h1>
@@ -88,13 +174,22 @@
 		</div>
 	{/if}
 
-	<button
-		class="chicken-button"
-		on:click={unleashChickens}
-		disabled={isLoading}
-	>
-		{isLoading ? 'cluck cluck...' : 'CHICKEN'}
-	</button>
+	<div class="button-row">
+		<button
+			class="chicken-button"
+			on:click={unleashChickens}
+			disabled={isLoading}
+		>
+			{isLoading ? 'cluck cluck...' : 'CHICKEN'}
+		</button>
+
+		<button
+			class="matrix-button"
+			on:click={toggleMatrixMode}
+		>
+			🐔 MATRIX MODE 🐔
+		</button>
+	</div>
 
 	{#if chickenOutput}
 		<div class="chicken-output">
@@ -173,6 +268,106 @@
 		color: #CCCCCC;
 		white-space: pre;
 		font-family: 'Courier New', Courier, monospace;
+	}
+
+	.button-row {
+		display: flex;
+		gap: 1rem;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	.matrix-button {
+		font-size: 1.5rem;
+		font-weight: bold;
+		padding: 1rem 2rem;
+		background-color: #00FF00;
+		color: #000000;
+		border: 4px solid #008000;
+		border-radius: 12px;
+		cursor: pointer;
+		font-family: 'Courier New', Courier, monospace;
+		text-transform: uppercase;
+		box-shadow: 6px 6px 0 #008000;
+		transition: all 0.1s ease;
+		animation: matrix-pulse 2s ease-in-out infinite;
+	}
+
+	.matrix-button:hover {
+		background-color: #00FFFF;
+		border-color: #008080;
+		box-shadow: 4px 4px 0 #008080;
+		transform: translate(2px, 2px);
+	}
+
+	.matrix-button:active {
+		transform: translate(4px, 4px);
+		box-shadow: 2px 2px 0 #008000;
+	}
+
+	@keyframes matrix-pulse {
+		0%, 100% {
+			box-shadow: 6px 6px 0 #008000, 0 0 10px #00FF00;
+		}
+		50% {
+			box-shadow: 6px 6px 0 #008000, 0 0 20px #00FF00, 0 0 30px #00FF00;
+		}
+	}
+
+	.matrix-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		z-index: 9999;
+		background-color: #000000;
+	}
+
+	.matrix-overlay canvas {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.matrix-exit-button {
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		z-index: 10000;
+		font-size: 1.5rem;
+		font-weight: bold;
+		padding: 1rem 2rem;
+		background-color: #FF0000;
+		color: #FFFFFF;
+		border: 4px solid #8B0000;
+		border-radius: 12px;
+		cursor: pointer;
+		font-family: 'Courier New', Courier, monospace;
+		text-transform: uppercase;
+		box-shadow: 6px 6px 0 #8B0000;
+		transition: all 0.1s ease;
+		animation: exit-pulse 1.5s ease-in-out infinite;
+	}
+
+	.matrix-exit-button:hover {
+		background-color: #FF4500;
+		transform: translate(2px, 2px);
+		box-shadow: 4px 4px 0 #8B0000;
+	}
+
+	.matrix-exit-button:active {
+		transform: translate(4px, 4px);
+		box-shadow: 2px 2px 0 #8B0000;
+	}
+
+	@keyframes exit-pulse {
+		0%, 100% {
+			box-shadow: 6px 6px 0 #8B0000, 0 0 10px #FF0000;
+		}
+		50% {
+			box-shadow: 6px 6px 0 #8B0000, 0 0 20px #FF0000, 0 0 30px #FF0000;
+		}
 	}
 
 	.screaming-chicken {
