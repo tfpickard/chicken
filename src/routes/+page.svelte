@@ -1053,27 +1053,30 @@
 		position: relative;
 		display: inline-block;
 		font-weight: bold;
-		padding-top: 8px;
+		padding-top: 12px;
 	}
 
 	.vector-text::before {
 		content: '';
 		position: absolute;
-		top: -2px;
-		left: -2px;
-		right: 8px;
-		height: 0;
-		border-top: 2px solid #FF6600;
+		top: 0;
+		left: 0;
+		right: 0;
+		width: 100%;
+		height: 2px;
+		background-color: #FF6600;
 	}
 
 	.vector-text::after {
-		content: '→';
+		content: '';
 		position: absolute;
-		top: -10px;
-		right: 0;
-		font-size: 1.2em;
-		color: #FF6600;
-		line-height: 1;
+		top: -3px;
+		right: -2px;
+		width: 0;
+		height: 0;
+		border-left: 8px solid #FF6600;
+		border-top: 5px solid transparent;
+		border-bottom: 5px solid transparent;
 	}
 
 	@media (max-width: 768px) {
