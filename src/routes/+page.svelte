@@ -146,6 +146,11 @@
 	<meta name="description" content="CaaC: Chicken as a CaaC - Enterprise-grade poultry delivery" />
 </svelte:head>
 
+<nav class="navbar">
+	<a href="/" class="nav-link active">🏠 Home</a>
+	<a href="/particles" class="nav-link">🐔 Particle Physics</a>
+</nav>
+
 {#if matrixMode}
 	<div
 		class="matrix-overlay"
@@ -219,8 +224,44 @@
 </main>
 
 <style>
+	.navbar {
+		position: sticky;
+		top: 0;
+		width: 100%;
+		background-color: #FF6600;
+		border-bottom: 4px solid #CC5500;
+		padding: 1rem 2rem;
+		display: flex;
+		gap: 2rem;
+		z-index: 100;
+		box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+	}
+
+	.nav-link {
+		color: #FFFF00;
+		text-decoration: none;
+		font-weight: bold;
+		font-size: 1.2rem;
+		padding: 0.5rem 1rem;
+		border-radius: 8px;
+		transition: all 0.2s ease;
+		text-shadow: 2px 2px 0 #000000;
+	}
+
+	.nav-link:hover {
+		background-color: #FF8800;
+		transform: translateY(-2px);
+		box-shadow: 0 4px 0 #CC5500;
+	}
+
+	.nav-link.active {
+		background-color: #FFFF00;
+		color: #000000;
+		text-shadow: 1px 1px 0 #FF6600;
+	}
+
 	.container {
-		min-height: 100vh;
+		min-height: calc(100vh - 80px);
 		display: flex;
 		flex-direction: column;
 		align-items: center;
