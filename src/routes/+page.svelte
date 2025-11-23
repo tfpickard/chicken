@@ -169,20 +169,21 @@
 			<pre>{SCREAMING_CHICKEN}</pre>
 		</div>
 	{:else}
-		<div class="chicken-display">
+		<div
+			class="chicken-display clickable-chicken"
+			on:click={unleashChickens}
+			on:keydown={(e) => e.key === 'Enter' && unleashChickens()}
+			role="button"
+			tabindex="0"
+		>
 			<pre class="ascii-chicken">{CHICKEN_FRAMES[currentFrame]}</pre>
+			{#if isLoading}
+				<div class="loading-text">cluck cluck...</div>
+			{/if}
 		</div>
 	{/if}
 
 	<div class="button-row">
-		<button
-			class="chicken-button"
-			on:click={unleashChickens}
-			disabled={isLoading}
-		>
-			{isLoading ? 'cluck cluck...' : 'CHICKEN'}
-		</button>
-
 		<button
 			class="matrix-button glitch"
 			on:click={toggleMatrixMode}
@@ -261,6 +262,51 @@
 		border-radius: 12px;
 		padding: 1.5rem 2rem;
 		box-shadow: 8px 8px 0 #CC5500;
+		position: relative;
+	}
+
+	.clickable-chicken {
+		cursor: pointer;
+		transition: all 0.2s ease;
+		user-select: none;
+	}
+
+	.clickable-chicken:hover {
+		background-color: #4A4A35;
+		border-color: #FF6600;
+		box-shadow: 10px 10px 0 #FF6600;
+		transform: translate(-2px, -2px);
+	}
+
+	.clickable-chicken:active {
+		transform: translate(4px, 4px);
+		box-shadow: 4px 4px 0 #CC5500;
+	}
+
+	.clickable-chicken:hover .ascii-chicken {
+		color: #FFFF00;
+		animation: chicken-bounce 0.5s ease-in-out infinite;
+	}
+
+	@keyframes chicken-bounce {
+		0%, 100% { transform: translateY(0); }
+		50% { transform: translateY(-5px); }
+	}
+
+	.loading-text {
+		position: absolute;
+		bottom: 10px;
+		left: 50%;
+		transform: translateX(-50%);
+		color: #FF6600;
+		font-weight: bold;
+		font-size: 1.2rem;
+		animation: pulse-loading 1s ease-in-out infinite;
+	}
+
+	@keyframes pulse-loading {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.5; }
 	}
 
 	.ascii-chicken {
@@ -269,6 +315,7 @@
 		color: #CCCCCC;
 		white-space: pre;
 		font-family: 'Courier New', Courier, monospace;
+		transition: color 0.2s ease;
 	}
 
 	.button-row {
@@ -556,37 +603,6 @@
 		0%, 100% { transform: translateX(0); }
 		25% { transform: translateX(-5px) rotate(-1deg); }
 		75% { transform: translateX(5px) rotate(1deg); }
-	}
-
-	.chicken-button {
-		font-size: 2rem;
-		font-weight: bold;
-		padding: 1rem 3rem;
-		background-color: #FF6600;
-		color: white;
-		border: 4px solid #8B4513;
-		border-radius: 12px;
-		cursor: pointer;
-		font-family: 'Courier New', Courier, monospace;
-		text-transform: uppercase;
-		box-shadow: 6px 6px 0 #8B4513;
-		transition: all 0.1s ease;
-	}
-
-	.chicken-button:hover:not(:disabled) {
-		background-color: #FF4500;
-		transform: translate(2px, 2px);
-		box-shadow: 4px 4px 0 #8B4513;
-	}
-
-	.chicken-button:active:not(:disabled) {
-		transform: translate(4px, 4px);
-		box-shadow: 2px 2px 0 #8B4513;
-	}
-
-	.chicken-button:disabled {
-		background-color: #CCC;
-		cursor: not-allowed;
 	}
 
 	.chicken-output {
