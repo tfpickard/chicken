@@ -1,6 +1,7 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 	import { CHICKEN_FRAMES, SCREAMING_CHICKEN } from '$lib/chickens';
+	import { chickenSounds } from '$lib/sounds';
 
 	let currentFrame = 0;
 	let chickenOutput = '';
@@ -35,6 +36,9 @@
 
 		// Konami code listener
 		window.addEventListener('keydown', handleKonami);
+
+		// Start random chicken sounds
+		chickenSounds.start();
 	});
 
 	onDestroy(() => {
@@ -47,6 +51,8 @@
 		if (typeof window !== 'undefined') {
 			window.removeEventListener('keydown', handleKonami);
 		}
+		// Clean up sound manager
+		chickenSounds.destroy();
 	});
 
 	function handleKonami(e) {
