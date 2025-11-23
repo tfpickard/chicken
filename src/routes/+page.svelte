@@ -1053,14 +1053,15 @@
 		position: relative;
 		display: inline-block;
 		font-weight: bold;
+		padding-top: 8px;
 	}
 
 	.vector-text::before {
 		content: '';
 		position: absolute;
-		top: -6px;
-		left: 0;
-		right: 0;
+		top: -2px;
+		left: -2px;
+		right: 8px;
 		height: 0;
 		border-top: 2px solid #FF6600;
 	}
@@ -1068,8 +1069,8 @@
 	.vector-text::after {
 		content: '→';
 		position: absolute;
-		top: -14px;
-		right: -8px;
+		top: -10px;
+		right: 0;
 		font-size: 1.2em;
 		color: #FF6600;
 		line-height: 1;
