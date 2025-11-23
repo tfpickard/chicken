@@ -388,7 +388,7 @@
 				</div>
 			</div>
 			<div class="vicsek-controls">
-				<button on:click={resetVicsek} class="vicsek-btn">🔄 𓅢.reset()</button>
+				<button on:click={resetVicsek} class="vicsek-btn">𓄿  ↬ 𓅱</button>
 
 				<label class="vicsek-control">
 					<span>||𓅱𓅱||: {particleCount}</span>
