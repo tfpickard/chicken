@@ -93,7 +93,7 @@
 		on:click={unleashChickens}
 		disabled={isLoading}
 	>
-		{isLoading ? 'CLUCKING...' : 'CHICKEN'}
+		{isLoading ? 'cluck cluck...' : 'CHICKEN'}
 	</button>
 
 	{#if chickenOutput}
@@ -109,7 +109,7 @@
 	{/if}
 
 	<footer>
-		<p>Chicen Agents for Enterprise Cickentic Solutions since 1974</p>
+		<p>Chicen Agents for Enterprise Chickentic Solutions since 1974</p>
 		<p class="hint">cluck... chicken chicken chicken try chicken konami chicken chicken code</p>
 	</footer>
 </main>
