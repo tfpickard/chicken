@@ -94,7 +94,77 @@ export const CHICKEN_FRAMES: string[] = [
     /  \\__/ | | \\__/  \\
    /        | |        \\
   /        _| |_        \\
- /________/_   _\\________\\`
+ /________/_   _\\________\\`,
+
+	// Frame 10: Chicken with sunglasses (cool chicken)
+	`
+       __//
+      /B__B\\
+      \\_._/
+       | |
+      _| |_
+     /_   _\\`,
+
+	// Frame 11: Upside down chicken
+	`
+     \\_ _ _/
+      _| |_
+       | |
+      /._.\\_
+      \\<__/.
+      \\\\__`,
+
+	// Frame 12: Tiny chicken
+	`
+      __/
+     /.>
+     \\_/
+      |
+     _|_`,
+
+	// Frame 13: Wide chicken
+	`
+     __//___
+    /.__>_  \\
+    \\_._____/
+     | | | |
+    _|_|_|_|_
+   /__     __\\`,
+
+	// Frame 14: Chicken army (multiple chickens)
+	`
+   __//  __//  __//
+  /._>\\ /._>\\ /._>\\
+  \\_._/ \\_._/ \\_._/
+   | |   | |   | |
+  _| |_ _| |_ _| |_`,
+
+	// Frame 15: Laser chicken
+	`
+       __//
+      /O__O\\===>
+      \\_._/
+       | |
+      _| |_
+     /_   _\\`,
+
+	// Frame 16: Party chicken
+	`
+   ♪  __//  ♫
+     /^__^\\
+     \\_~_/
+      \\ /
+      _| |_
+     /_   _\\`,
+
+	// Frame 17: Sleeping chicken
+	`
+       __//
+      /z__z\\
+      \\_._/
+       | |
+      _| |_
+     /_   _\\`
 ];
 
 // The screaming chicken for Konami code activation

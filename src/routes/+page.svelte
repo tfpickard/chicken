@@ -7,6 +7,7 @@
 	let isLoading = false;
 	let animationInterval;
 	let konamiActivated = false;
+	let chickenCount = Math.floor(Math.random() * 1000);
 
 	// Konami code sequence
 	const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
@@ -15,7 +16,7 @@
 	onMount(() => {
 		// Start the chicken animation at 4 fps (250ms)
 		animationInterval = setInterval(() => {
-			currentFrame = (currentFrame + 1) % 8;
+			currentFrame = (currentFrame + 1) % 18;
 		}, 250);
 
 		// Konami code listener
@@ -71,7 +72,10 @@
 <main class="container">
 	<header>
 		<h1 class="title">chicken</h1>
-		<p class="subtitle">CaaC: Chicken as a CaaC</p>
+		<p class="subtitle">
+			CccC: Chicken chicken chicken CHICKEN<br/>
+			Chickensite: <a href="https://chicken.ainot.io" class="chicken-link">https://ccc.chicken.ainot.io</a>
+		</p>
 	</header>
 
 	{#if konamiActivated}
@@ -95,8 +99,8 @@
 	{#if chickenOutput}
 		<div class="chicken-output">
 			<div class="output-header">
-				<span>POULTRY NIAGARA FALLS</span>
-				<span class="count">(1000 chickens)</span>
+				<span class="obnoxious-title">C H I C K E N</span>
+				<span class="count">({chickenCount} chickens)</span>
 			</div>
 			<div class="output-scroll">
 				{chickenOutput}
@@ -128,29 +132,45 @@
 		font-size: 4rem;
 		font-weight: bold;
 		text-transform: lowercase;
-		color: #8B4513;
-		text-shadow: 3px 3px 0 #FF6600;
+		color: #000000;
+		text-shadow: 3px 3px 0 #FF6600, -1px -1px 0 #00FFFF;
 		letter-spacing: 0.2em;
 	}
 
 	.subtitle {
 		font-size: 1.2rem;
-		color: #654321;
+		color: #000000;
 		margin-top: 0.5rem;
+		font-weight: bold;
+	}
+
+	.chicken-link {
+		color: #FF0080;
+		text-decoration: none;
+		font-weight: bold;
+		text-shadow: 1px 1px 2px #00FFFF;
+		transition: all 0.3s ease;
+	}
+
+	.chicken-link:hover {
+		color: #00FFFF;
+		text-shadow: 2px 2px 4px #FF0080;
+		transform: scale(1.1);
+		display: inline-block;
 	}
 
 	.chicken-display {
-		background-color: #FFFACD;
-		border: 4px solid #8B4513;
+		background-color: #3D3D2B;
+		border: 4px solid #CC5500;
 		border-radius: 12px;
 		padding: 1.5rem 2rem;
-		box-shadow: 8px 8px 0 #FF6600;
+		box-shadow: 8px 8px 0 #CC5500;
 	}
 
 	.ascii-chicken {
 		font-size: 1.5rem;
 		line-height: 1.2;
-		color: #8B4513;
+		color: #CCCCCC;
 		white-space: pre;
 		font-family: 'Courier New', Courier, monospace;
 	}
@@ -210,24 +230,55 @@
 	.chicken-output {
 		width: 100%;
 		max-width: 800px;
-		background-color: #FFFACD;
-		border: 4px solid #8B4513;
+		background-color: #4A3A20;
+		border: 4px solid #CC5500;
 		border-radius: 12px;
 		overflow: hidden;
-		box-shadow: 8px 8px 0 #FF6600;
+		box-shadow: 8px 8px 0 #CC5500;
 	}
 
 	.output-header {
-		background-color: #8B4513;
+		background-color: #FF6600;
 		color: #FFFF00;
 		padding: 0.5rem 1rem;
 		display: flex;
 		justify-content: space-between;
 		font-weight: bold;
+		border-bottom: 4px solid #FF0080;
+	}
+
+	.obnoxious-title {
+		animation: rainbow-pulse 2s ease-in-out infinite, wobble 0.5s ease-in-out infinite;
+		font-size: 1.3rem;
+		letter-spacing: 0.3em;
+		text-shadow:
+			2px 2px 0 #FF0080,
+			-2px -2px 0 #00FFFF,
+			2px -2px 0 #00FF00,
+			-2px 2px 0 #FF00FF;
+	}
+
+	@keyframes rainbow-pulse {
+		0%, 100% { color: #FFFF00; }
+		25% { color: #00FFFF; }
+		50% { color: #FF00FF; }
+		75% { color: #00FF00; }
+	}
+
+	@keyframes wobble {
+		0%, 100% { transform: rotate(-2deg); }
+		50% { transform: rotate(2deg); }
 	}
 
 	.count {
-		color: #FFD700;
+		color: #FFFFFF;
+		font-size: 1.1rem;
+		animation: pulse-count 1.5s ease-in-out infinite;
+	}
+
+	@keyframes pulse-count {
+		0%, 100% { opacity: 1; }
+		50% { opacity: 0.7; }
 	}
 
 	.output-scroll {
@@ -237,20 +288,22 @@
 		font-size: 1rem;
 		line-height: 1.6;
 		word-wrap: break-word;
-		color: #654321;
+		color: #C8B896;
+		background-color: #2E2416;
 	}
 
 	footer {
 		margin-top: auto;
 		text-align: center;
-		color: #8B4513;
+		color: #000000;
 		font-size: 0.9rem;
+		font-weight: bold;
 	}
 
 	.hint {
 		font-size: 0.7rem;
-		color: #B8860B;
+		color: #663399;
 		margin-top: 0.5rem;
-		opacity: 0.7;
+		opacity: 0.9;
 	}
 </style>
