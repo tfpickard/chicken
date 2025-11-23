@@ -501,11 +501,12 @@
 		padding: 1.5rem 2rem;
 		box-shadow: 8px 8px 0 #CC5500;
 		position: relative;
-		min-height: 200px;
-		min-width: 400px;
+		height: 250px;
+		width: 500px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		overflow: hidden;
 	}
 
 	.clickable-chicken {
@@ -559,6 +560,9 @@
 		white-space: pre;
 		font-family: 'Courier New', Courier, monospace;
 		transition: color 0.2s ease;
+		margin: 0;
+		max-width: 100%;
+		max-height: 100%;
 	}
 
 	.button-row {
