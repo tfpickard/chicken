@@ -13,6 +13,21 @@
 	let ctx;
 	let matrixInterval;
 
+	// AVANT-GARDE FEATURES
+	let particleCanvas;
+	let particleCtx;
+	let particles = [];
+	let particleAnimationFrame;
+	let audioContext;
+	let generativeMode = false;
+	let generativeCanvas;
+	let generativeCtx;
+	let generativeInterval;
+	let cursorTrail = [];
+	let chaosIntensity = 0.7; // 0 to 1
+	let voiceRecognition;
+	let isListening = false;
+
 	// Konami code sequence
 	const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
 	let konamiIndex = 0;
@@ -35,6 +50,23 @@
 
 		// Konami code listener
 		window.addEventListener('keydown', handleKonami);
+
+		// Initialize particle canvas
+		if (particleCanvas) {
+			particleCtx = particleCanvas.getContext('2d');
+			particleCanvas.width = window.innerWidth;
+			particleCanvas.height = window.innerHeight;
+			animateParticles();
+		}
+
+		// Initialize audio context (requires user interaction)
+		window.addEventListener('click', initAudio, { once: true });
+
+		// Track cursor for distortion effects
+		window.addEventListener('mousemove', handleCursorMove);
+
+		// Initialize voice recognition
+		initVoiceRecognition();
 	});
 
 	onDestroy(() => {
@@ -44,8 +76,21 @@
 		if (matrixInterval) {
 			clearInterval(matrixInterval);
 		}
+		if (generativeInterval) {
+			clearInterval(generativeInterval);
+		}
+		if (particleAnimationFrame) {
+			cancelAnimationFrame(particleAnimationFrame);
+		}
 		if (typeof window !== 'undefined') {
 			window.removeEventListener('keydown', handleKonami);
+			window.removeEventListener('mousemove', handleCursorMove);
+		}
+		if (voiceRecognition) {
+			voiceRecognition.stop();
+		}
+		if (audioContext) {
+			audioContext.close();
 		}
 	});
 
@@ -139,12 +184,275 @@
 			isLoading = false;
 		}
 	}
+
+	// ===== AVANT-GARDE FEATURES =====
+
+	// Particle explosion system
+	function createParticleExplosion(x, y) {
+		const chickenEmojis = ['🐔', '🐓', '🐤', '🐥', '🐣', '🍗', '🥚'];
+		const particleCount = Math.floor(20 * chaosIntensity);
+
+		for (let i = 0; i < particleCount; i++) {
+			particles.push({
+				x,
+				y,
+				vx: (Math.random() - 0.5) * 10 * chaosIntensity,
+				vy: (Math.random() - 0.5) * 10 * chaosIntensity - 2,
+				rotation: Math.random() * Math.PI * 2,
+				rotationSpeed: (Math.random() - 0.5) * 0.2,
+				life: 1,
+				decay: 0.01 + Math.random() * 0.01,
+				char: chickenEmojis[Math.floor(Math.random() * chickenEmojis.length)],
+				size: 20 + Math.random() * 20
+			});
+		}
+
+		// Play chicken sound
+		playChickenSound();
+	}
+
+	function animateParticles() {
+		if (!particleCtx) return;
+
+		particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+
+		// Draw cursor trail with distortion
+		cursorTrail.forEach((point, i) => {
+			const alpha = (i / cursorTrail.length) * 0.3 * chaosIntensity;
+			const radius = 30 * (1 - i / cursorTrail.length) * chaosIntensity;
+
+			particleCtx.fillStyle = `rgba(255, 255, 0, ${alpha})`;
+			particleCtx.beginPath();
+			particleCtx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+			particleCtx.fill();
+		});
+
+		// Update and draw particles
+		particles = particles.filter(p => {
+			p.x += p.vx;
+			p.y += p.vy;
+			p.vy += 0.3; // gravity
+			p.rotation += p.rotationSpeed;
+			p.life -= p.decay;
+
+			if (p.life > 0) {
+				particleCtx.save();
+				particleCtx.translate(p.x, p.y);
+				particleCtx.rotate(p.rotation);
+				particleCtx.globalAlpha = p.life;
+				particleCtx.font = `${p.size}px monospace`;
+				particleCtx.fillText(p.char, 0, 0);
+				particleCtx.restore();
+				return true;
+			}
+			return false;
+		});
+
+		particleAnimationFrame = requestAnimationFrame(animateParticles);
+	}
+
+	function handlePageClick(e) {
+		if (!matrixMode && !generativeMode) {
+			createParticleExplosion(e.clientX, e.clientY);
+		}
+	}
+
+	function handleCursorMove(e) {
+		cursorTrail.push({ x: e.clientX, y: e.clientY });
+		if (cursorTrail.length > 10) {
+			cursorTrail.shift();
+		}
+	}
+
+	// Web Audio API - Generative chicken sounds
+	function initAudio() {
+		if (!audioContext) {
+			audioContext = new (window.AudioContext || window.webkitAudioContext)();
+		}
+	}
+
+	function playChickenSound() {
+		if (!audioContext) return;
+
+		const now = audioContext.currentTime;
+		const oscillator = audioContext.createOscillator();
+		const gainNode = audioContext.createGain();
+		const filter = audioContext.createBiquadFilter();
+
+		// Glitchy chicken sound parameters
+		const baseFreq = 200 + Math.random() * 400;
+		oscillator.frequency.setValueAtTime(baseFreq, now);
+		oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, now + 0.1);
+
+		// Add chaos with filter
+		filter.type = 'lowpass';
+		filter.frequency.setValueAtTime(1000 + Math.random() * 2000 * chaosIntensity, now);
+		filter.Q.setValueAtTime(10 * chaosIntensity, now);
+
+		// Glitch envelope
+		gainNode.gain.setValueAtTime(0.3 * chaosIntensity, now);
+		gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+
+		oscillator.type = Math.random() > 0.5 ? 'square' : 'sawtooth';
+		oscillator.connect(filter);
+		filter.connect(gainNode);
+		gainNode.connect(audioContext.destination);
+
+		oscillator.start(now);
+		oscillator.stop(now + 0.15);
+	}
+
+	// Generative chicken art
+	function toggleGenerativeMode() {
+		generativeMode = !generativeMode;
+
+		if (generativeMode) {
+			setTimeout(() => {
+				if (generativeCanvas) {
+					generativeCtx = generativeCanvas.getContext('2d');
+					generativeCanvas.width = window.innerWidth;
+					generativeCanvas.height = window.innerHeight;
+					startGenerativeArt();
+				}
+			}, 50);
+		} else {
+			if (generativeInterval) {
+				clearInterval(generativeInterval);
+				generativeInterval = null;
+			}
+		}
+	}
+
+	function startGenerativeArt() {
+		const colors = ['#FFFF00', '#FF6600', '#00FFFF', '#FF00FF', '#00FF00'];
+
+		function drawGenerativeFrame() {
+			// Fade effect
+			generativeCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+			generativeCtx.fillRect(0, 0, generativeCanvas.width, generativeCanvas.height);
+
+			// Draw abstract chicken forms
+			const complexity = 5 + Math.floor(10 * chaosIntensity);
+			for (let i = 0; i < complexity; i++) {
+				const x = Math.random() * generativeCanvas.width;
+				const y = Math.random() * generativeCanvas.height;
+				const size = 50 + Math.random() * 200 * chaosIntensity;
+				const color = colors[Math.floor(Math.random() * colors.length)];
+
+				generativeCtx.fillStyle = color;
+				generativeCtx.globalAlpha = 0.1 + Math.random() * 0.3;
+
+				// Random shapes
+				const shape = Math.floor(Math.random() * 3);
+				if (shape === 0) {
+					// Circle
+					generativeCtx.beginPath();
+					generativeCtx.arc(x, y, size, 0, Math.PI * 2);
+					generativeCtx.fill();
+				} else if (shape === 1) {
+					// Triangle
+					generativeCtx.beginPath();
+					generativeCtx.moveTo(x, y - size);
+					generativeCtx.lineTo(x - size, y + size);
+					generativeCtx.lineTo(x + size, y + size);
+					generativeCtx.closePath();
+					generativeCtx.fill();
+				} else {
+					// Rectangle
+					generativeCtx.fillRect(x - size/2, y - size/2, size, size);
+				}
+
+				// Add chicken emoji occasionally
+				if (Math.random() > 0.7) {
+					generativeCtx.globalAlpha = 0.5;
+					generativeCtx.font = `${size}px monospace`;
+					generativeCtx.fillText('🐔', x, y);
+				}
+			}
+
+			generativeCtx.globalAlpha = 1;
+		}
+
+		generativeInterval = setInterval(drawGenerativeFrame, 100);
+	}
+
+	// Voice recognition
+	function initVoiceRecognition() {
+		if (typeof window === 'undefined') return;
+
+		const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+		if (!SpeechRecognition) return;
+
+		voiceRecognition = new SpeechRecognition();
+		voiceRecognition.continuous = true;
+		voiceRecognition.interimResults = false;
+
+		voiceRecognition.onresult = (event) => {
+			const last = event.results.length - 1;
+			const text = event.results[last][0].transcript.toLowerCase();
+
+			if (text.includes('chicken')) {
+				// Trigger random chicken effect
+				const effects = [toggleMatrixMode, toggleGenerativeMode, unleashChickens];
+				const randomEffect = effects[Math.floor(Math.random() * effects.length)];
+				randomEffect();
+				playChickenSound();
+			}
+		};
+
+		voiceRecognition.onerror = () => {
+			isListening = false;
+		};
+
+		voiceRecognition.onend = () => {
+			if (isListening) {
+				voiceRecognition.start();
+			}
+		};
+	}
+
+	function toggleVoiceControl() {
+		if (!voiceRecognition) {
+			initVoiceRecognition();
+			return;
+		}
+
+		isListening = !isListening;
+		if (isListening) {
+			try {
+				voiceRecognition.start();
+			} catch (e) {
+				// Already started
+			}
+		} else {
+			voiceRecognition.stop();
+		}
+	}
 </script>
 
 <svelte:head>
 	<title>chicken</title>
 	<meta name="description" content="CaaC: Chicken as a CaaC - Enterprise-grade poultry delivery" />
 </svelte:head>
+
+<!-- Particle canvas overlay -->
+<canvas bind:this={particleCanvas} class="particle-canvas" on:click={handlePageClick}></canvas>
+
+{#if generativeMode}
+	<div
+		class="generative-overlay"
+		on:click={toggleGenerativeMode}
+		on:keydown={(e) => (e.key === 'Escape' || e.key === 'Enter') && toggleGenerativeMode()}
+		role="button"
+		tabindex="0"
+		aria-label="Exit generative art mode"
+	>
+		<canvas bind:this={generativeCanvas}></canvas>
+		<button class="generative-exit-button glitch-exit" on:click|stopPropagation={toggleGenerativeMode} data-text="CHICKEN">
+			CHICKEN
+		</button>
+	</div>
+{/if}
 
 {#if matrixMode}
 	<div
@@ -198,6 +506,37 @@
 		>
 			CHICKEN
 		</button>
+		<button
+			class="generative-button glitch"
+			on:click={toggleGenerativeMode}
+			data-text="CHICKEN"
+		>
+			CHICKEN
+		</button>
+		<button
+			class="voice-button glitch"
+			class:active={isListening}
+			on:click={toggleVoiceControl}
+			data-text="CHICKEN"
+		>
+			{isListening ? '🎤 CHICKEN' : 'CHICKEN'}
+		</button>
+	</div>
+
+	<!-- Chaos intensity slider -->
+	<div class="chaos-control">
+		<label for="chaos-slider" class="chaos-label">
+			CHAOS: {Math.floor(chaosIntensity * 100)}%
+		</label>
+		<input
+			id="chaos-slider"
+			type="range"
+			min="0"
+			max="100"
+			bind:value={chaosIntensity}
+			on:input={(e) => chaosIntensity = e.target.value / 100}
+			class="chaos-slider"
+		/>
 	</div>
 
 	{#if chickenOutput}
@@ -691,5 +1030,222 @@
 		color: #663399;
 		margin-top: 0.5rem;
 		opacity: 0.9;
+	}
+
+	/* ===== AVANT-GARDE STYLES ===== */
+
+	.particle-canvas {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		pointer-events: all;
+		z-index: 1;
+	}
+
+	.generative-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		z-index: 9999;
+		background-color: #000000;
+		cursor: pointer;
+	}
+
+	.generative-overlay canvas {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	.generative-exit-button {
+		position: fixed;
+		top: 20px;
+		right: 20px;
+		z-index: 10000;
+		font-size: 1.5rem;
+		font-weight: bold;
+		padding: 1rem 2rem;
+		background-color: #FF00FF;
+		color: #FFFFFF;
+		border: 4px solid #8B008B;
+		border-radius: 12px;
+		cursor: pointer;
+		font-family: 'Courier New', Courier, monospace;
+		text-transform: uppercase;
+		box-shadow: 6px 6px 0 #8B008B;
+		transition: all 0.1s ease;
+		animation: generative-pulse 1.5s ease-in-out infinite;
+	}
+
+	.generative-exit-button:hover {
+		background-color: #FF00AA;
+		transform: translate(2px, 2px);
+		box-shadow: 4px 4px 0 #8B008B;
+	}
+
+	@keyframes generative-pulse {
+		0%, 100% {
+			box-shadow: 6px 6px 0 #8B008B, 0 0 10px #FF00FF;
+		}
+		50% {
+			box-shadow: 6px 6px 0 #8B008B, 0 0 20px #FF00FF, 0 0 30px #FF00FF;
+		}
+	}
+
+	.generative-button {
+		font-size: 1.5rem;
+		font-weight: bold;
+		padding: 1rem 2rem;
+		background-color: #FF00FF;
+		color: #000000;
+		border: 4px solid #8B008B;
+		border-radius: 12px;
+		cursor: pointer;
+		font-family: 'Courier New', Courier, monospace;
+		text-transform: uppercase;
+		box-shadow: 6px 6px 0 #8B008B;
+		transition: all 0.1s ease;
+		animation: generative-pulse 2s ease-in-out infinite;
+		position: relative;
+	}
+
+	.generative-button:hover {
+		background-color: #FF00AA;
+		border-color: #660066;
+		box-shadow: 4px 4px 0 #660066;
+		transform: translate(2px, 2px);
+	}
+
+	.generative-button:active {
+		transform: translate(4px, 4px);
+		box-shadow: 2px 2px 0 #8B008B;
+	}
+
+	.voice-button {
+		font-size: 1.5rem;
+		font-weight: bold;
+		padding: 1rem 2rem;
+		background-color: #00FFFF;
+		color: #000000;
+		border: 4px solid #008B8B;
+		border-radius: 12px;
+		cursor: pointer;
+		font-family: 'Courier New', Courier, monospace;
+		text-transform: uppercase;
+		box-shadow: 6px 6px 0 #008B8B;
+		transition: all 0.1s ease;
+		animation: voice-pulse 2s ease-in-out infinite;
+		position: relative;
+	}
+
+	.voice-button:hover {
+		background-color: #00CCCC;
+		border-color: #006666;
+		box-shadow: 4px 4px 0 #006666;
+		transform: translate(2px, 2px);
+	}
+
+	.voice-button:active {
+		transform: translate(4px, 4px);
+		box-shadow: 2px 2px 0 #008B8B;
+	}
+
+	.voice-button.active {
+		background-color: #FF0000;
+		border-color: #8B0000;
+		animation: recording-pulse 0.5s ease-in-out infinite;
+	}
+
+	@keyframes voice-pulse {
+		0%, 100% {
+			box-shadow: 6px 6px 0 #008B8B, 0 0 10px #00FFFF;
+		}
+		50% {
+			box-shadow: 6px 6px 0 #008B8B, 0 0 20px #00FFFF, 0 0 30px #00FFFF;
+		}
+	}
+
+	@keyframes recording-pulse {
+		0%, 100% {
+			box-shadow: 6px 6px 0 #8B0000, 0 0 20px #FF0000;
+		}
+		50% {
+			box-shadow: 6px 6px 0 #8B0000, 0 0 40px #FF0000, 0 0 60px #FF0000;
+		}
+	}
+
+	.chaos-control {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 1rem;
+		background-color: #2E2416;
+		border: 4px solid #FF6600;
+		border-radius: 12px;
+		box-shadow: 6px 6px 0 #FF6600;
+		width: 100%;
+		max-width: 400px;
+	}
+
+	.chaos-label {
+		font-size: 1.5rem;
+		font-weight: bold;
+		color: #FFFF00;
+		text-shadow: 2px 2px 0 #FF00FF, -2px -2px 0 #00FFFF;
+		letter-spacing: 0.2em;
+		animation: glitch 1s infinite;
+	}
+
+	.chaos-slider {
+		width: 100%;
+		height: 8px;
+		-webkit-appearance: none;
+		appearance: none;
+		background: linear-gradient(to right, #00FF00, #FFFF00, #FF6600, #FF0000, #FF00FF);
+		outline: none;
+		border-radius: 4px;
+		cursor: pointer;
+		border: 2px solid #000000;
+	}
+
+	.chaos-slider::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 30px;
+		height: 30px;
+		background: #FFFF00;
+		border: 4px solid #000000;
+		border-radius: 50%;
+		cursor: pointer;
+		box-shadow: 0 0 10px #FFFF00;
+		transition: all 0.2s ease;
+	}
+
+	.chaos-slider::-webkit-slider-thumb:hover {
+		background: #00FFFF;
+		box-shadow: 0 0 20px #00FFFF;
+		transform: scale(1.2);
+	}
+
+	.chaos-slider::-moz-range-thumb {
+		width: 30px;
+		height: 30px;
+		background: #FFFF00;
+		border: 4px solid #000000;
+		border-radius: 50%;
+		cursor: pointer;
+		box-shadow: 0 0 10px #FFFF00;
+		transition: all 0.2s ease;
+	}
+
+	.chaos-slider::-moz-range-thumb:hover {
+		background: #00FFFF;
+		box-shadow: 0 0 20px #00FFFF;
+		transform: scale(1.2);
 	}
 </style>
