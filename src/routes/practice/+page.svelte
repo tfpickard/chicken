@@ -108,13 +108,13 @@
 		<h1>🐔 CHICKEN PRACTICE 🐔</h1>
 
 		<div class="instructions">
-			<p>Type "chicken" as many times as you can without making a mistake!</p>
-			<p class="warning">⚠️ ONE MISTAKE = GAME OVER ⚠️</p>
+			<p>Peck "chicken" as chick chickens as you cluck without clucking a mischicken!</p>
+			<p class="warning">⚠️ ONE DEFORMED CHICKEN = NO CHICKEN ⚠️</p>
 		</div>
 
 		<div class="stats">
 			<div class="stat-box">
-				<div class="stat-label">CHICKENS TYPED</div>
+				<div class="stat-label">CHICKENS PECKED</div>
 				<div class="stat-value">{n}</div>
 			</div>
 
@@ -124,7 +124,7 @@
 			</div>
 
 			<div class="stat-box highlight">
-				<div class="stat-label">SCORE</div>
+				<div class="stat-label">CHICKENS</div>
 				<div class="stat-value score">{dBchicken.toFixed(2)} dBchicken</div>
 			</div>
 
@@ -143,14 +143,14 @@
 				type="text"
 				class="typing-input"
 				on:input={handleInput}
-				placeholder={isGameStarted ? 'Keep typing...' : 'Start typing "chicken"...'}
+				placeholder={isGameStarted ? 'Keep pecking...' : 'Cluck pecking "chicken"...'}
 				autocomplete="off"
 				autocorrect="off"
 				autocapitalize="off"
 				spellcheck="false"
 			/>
 
-			<button class="reset-btn" on:click={reset}>RESET</button>
+			<button class="reset-btn" on:click={reset}>RECHICK</button>
 		</div>
 
 		<div class="formula">
